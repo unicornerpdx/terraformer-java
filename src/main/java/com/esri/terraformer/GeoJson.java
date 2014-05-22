@@ -14,6 +14,8 @@ public abstract class GeoJson<T> extends ArrayList<T> {
 
     public abstract GeoJsonType getType();
     public abstract String toJson();
+    public abstract boolean isValid();
+    protected abstract JsonObject toJsonObject(Gson gson);
 
     public double[] bbox() {
         return null;

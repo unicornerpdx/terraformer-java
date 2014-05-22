@@ -7,16 +7,20 @@ import com.google.gson.JsonObject;
 public final class MultiPoint extends Geometry<Point> {
     private static final String EXCEPTION_PREFIX = "Error while parsing MultiPoint: ";
 
-    private MultiPoint() {}
-
     @Override
     public GeoJsonType getType() {
         return GeoJsonType.MULTIPOINT;
     }
 
     @Override
-    public String toJson() {
-        return null;
+    public boolean isValid() {
+        for (Point p : this) {
+            if (!p.isValid()) {
+                return false;
+            }
+        }
+
+        return size() > 0;
     }
 
     public static MultiPoint decodeMultiPoint(String json) throws TerraformerException {

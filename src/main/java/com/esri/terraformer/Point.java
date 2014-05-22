@@ -7,16 +7,20 @@ import com.google.gson.JsonObject;
 public final class Point extends Geometry<Double> {
     private static final String EXCEPTION_PREFIX = "Error while parsing Point: ";
 
-    private Point() {}
-
     @Override
     public GeoJsonType getType() {
         return GeoJsonType.POINT;
     }
 
     @Override
-    public String toJson() {
-        return null;
+    public boolean isValid() {
+        for (Double dbl : this) {
+            if (dbl == null) {
+                return false;
+            }
+        }
+
+        return size() > 1;
     }
 
     public static Point decodePoint(String json) throws TerraformerException {

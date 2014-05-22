@@ -1,5 +1,6 @@
 package com.esri.terraformer;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,6 +12,27 @@ public abstract class Geometry<T> extends GeoJson<T> {
     protected static final String COORDINATES_NOT_ARRAY = "coordinates not an array";
 
     public static final String COORDINATES_KEY = "coordinates";
+
+    @Override
+    public String toJson() {
+        Gson gson = new Gson();
+        return gson.toJson(toJsonObject(gson));
+    }
+
+    @Override
+    protected JsonObject toJsonObject(Gson gson) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        JsonObject object = new JsonObject();
+        object.addProperty(TYPE_KEY, getType().toString());
+
+        JsonElement coords = gson.toJsonTree(this);
+        object.add(COORDINATES_KEY, coords);
+
+        return object;
+    }
 
     /**
      * Package private. Don't call me with null!
