@@ -11,8 +11,13 @@ import java.util.Arrays;
 public class GeometryCollection extends Geometry<Geometry<?>> {
     public static final String GEOMETRIES_KEY = "geometries";
 
-    public GeometryCollection(Geometry<?> geos) {
-        addAll(Arrays.asList(geos));
+    /**
+     * A valid GeometryCollection contains 0 or more non-null {@link Geometry}'s.
+     *
+     * @param geometries
+     */
+    public GeometryCollection(Geometry<?>... geometries) {
+        addAll(Arrays.asList(geometries));
     }
 
     @Override
@@ -45,7 +50,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
     @Override
     public boolean isValid() {
         for (Geometry geo : this) {
-            if (!geo.isValid()) {
+            if (geo == null || !geo.isValid()) {
                 return false;
             }
         }

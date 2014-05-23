@@ -41,7 +41,6 @@ public abstract class Geometry<T> extends GeoJson<T> {
      * @throws TerraformerException
      */
     static JsonElement getCoordinates(JsonObject object) throws TerraformerException {
-        // assume at this point that the type is correct
         JsonElement coordsElem = object.get(COORDINATES_KEY);
 
         if (coordsElem == null) {

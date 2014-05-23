@@ -9,6 +9,11 @@ import java.util.Arrays;
 public final class Point extends Geometry<Double> {
     private static final String EXCEPTION_PREFIX = "Error while parsing Point: ";
 
+    /**
+     * A Valid Point contains 2 or more non-null {@link Double}'s.
+     *
+     * @param coords
+     */
     public Point(Double... coords) {
         addAll(Arrays.asList(coords));
     }
@@ -31,14 +36,8 @@ public final class Point extends Geometry<Double> {
 
     @Override
     public boolean isEquivalentTo(GeoJson<?> obj) {
-        Point other;
-        try {
-            other = (Point) obj;
-        } catch(ClassCastException e) {
-            return false;
-        }
+        return obj.getClass() == Point.class && equals(obj);
 
-        return equals(other);
     }
 
     public static Point decodePoint(String json) throws TerraformerException {
@@ -57,7 +56,7 @@ public final class Point extends Geometry<Double> {
      * @throws TerraformerException
      */
     static Point fromJsonObject(JsonObject object) throws TerraformerException {
-        if (!checkType(object, GeoJsonType.POINT)) {
+        if (!(getType(object) == GeoJsonType.POINT)) {
             throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
         }
 

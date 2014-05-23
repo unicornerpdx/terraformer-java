@@ -9,6 +9,11 @@ import java.util.Arrays;
 public final class MultiPoint extends Geometry<Point> {
     private static final String EXCEPTION_PREFIX = "Error while parsing MultiPoint: ";
 
+    /**
+     * A valid MultiPoint contains 2 or more non-null {@link Point}'s.
+     *
+     * @param points
+     */
     public MultiPoint(Point... points) {
         addAll(Arrays.asList(points));
     }
@@ -21,12 +26,12 @@ public final class MultiPoint extends Geometry<Point> {
     @Override
     public boolean isValid() {
         for (Point p : this) {
-            if (!p.isValid()) {
+            if (p == null || !p.isValid()) {
                 return false;
             }
         }
 
-        return size() > 0;
+        return size() > 1;
     }
 
     @Override
@@ -36,15 +41,8 @@ public final class MultiPoint extends Geometry<Point> {
             return equal;
         }
 
-        MultiPoint other;
-        try {
-            other = (MultiPoint) obj;
-        } catch(ClassCastException e) {
-            return false;
-        }
-
         // gotta do contains in both directions to account for duplicates that exist only on one side.
-        return other.containsAll(this) && containsAll(other);
+        return obj.containsAll(this) && containsAll(obj);
     }
 
     public static MultiPoint decodeMultiPoint(String json) throws TerraformerException {
@@ -63,7 +61,7 @@ public final class MultiPoint extends Geometry<Point> {
      * @throws TerraformerException
      */
     static MultiPoint fromJsonObject(JsonObject object) throws TerraformerException {
-        if (!checkType(object, GeoJsonType.MULTIPOINT)) {
+        if (!(getType(object) == GeoJsonType.MULTIPOINT)) {
             throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
         }
 
@@ -78,7 +76,7 @@ public final class MultiPoint extends Geometry<Point> {
      * @throws TerraformerException
      */
     static MultiPoint fromCoordinates(JsonElement coordsElem) throws TerraformerException {
-        JsonArray coords = getCoordinateArray(coordsElem, 1);
+        JsonArray coords = getCoordinateArray(coordsElem, 2);
 
         MultiPoint returnVal = new MultiPoint();
         for (JsonElement elem : coords) {

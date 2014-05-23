@@ -13,7 +13,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
     public static final String TYPE_KEY = "type";
 
     /**
-     * Returns an enum representing one fo the GeoJSON types.  See {@link GeoJsonType}.
+     * Returns an enum representing one of the GeoJSON types.  See {@link GeoJsonType}.
      *
      * @return
      */
@@ -79,6 +79,10 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             return false;
         }
 
+        if (obj1.getClass() != obj2.getClass()) {
+            return false;
+        }
+
         if (obj1.size() != obj2.size()) {
             return false;
         }
@@ -116,7 +120,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
     }
 
     /**
-     * Package private. Don't call me with null!
+     * Package private.
      *
      * @param objectElem
      * @param error
@@ -135,7 +139,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
     }
 
     /**
-     * Package private. Don't call me with null!
+     * Package private.
      *
      * @param arrayElem
      * @param error
@@ -157,35 +161,34 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * Package private.
      *
      * @param object
-     * @param type
      * @return
      */
-    static boolean checkType(JsonObject object, GeoJsonType type) {
+    static GeoJsonType getType(JsonObject object) {
         if (object == null) {
-            return false;
+            return null;
         }
 
         JsonElement typeElem = object.get(TYPE_KEY);
 
         if (typeElem == null) {
-            return false;
+            return null;
         }
 
         String typeString;
         try {
             typeString = typeElem.getAsString();
         } catch (RuntimeException e) {
-            return false;
+            return null;
         }
 
         GeoJsonType foundType;
         try {
             foundType = GeoJsonType.fromJson(typeString);
         } catch (RuntimeException e) {
-            return false;
+            return null;
         }
 
-        return foundType == type;
+        return foundType;
     }
 
     /**

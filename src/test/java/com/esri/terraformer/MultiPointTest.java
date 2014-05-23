@@ -15,7 +15,7 @@ public class MultiPointTest {
     private static final String INVALID_INNER_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,3.0],[100.0,\"squid\"],[101.0,1.0]]}";
     private static final String NO_COORDINATES = "{\"type\":\"MultiPoint\"}";
     private static final String COORDS_NOT_ARRAY = "{\"type\":\"MultiPoint\",\"coordinates\":\"horse\"}";
-    private static final String COORDS_TOO_SHORT = "{\"type\":\"MultiPoint\",\"coordinates\":[]}";
+    private static final String COORDS_TOO_SHORT = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0]]}";
 
     @Test
     public void testGetType() throws Exception {
