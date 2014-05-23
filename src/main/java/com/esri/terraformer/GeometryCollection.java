@@ -76,7 +76,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         }
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
-        return compareGeometries(this, other) && compareGeometries(other, this);
+        return compareGeometryCollections(this, other) && compareGeometryCollections(other, this);
     }
 
     public static GeometryCollection decodeGeometryCollection(String json) throws TerraformerException {
@@ -112,7 +112,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         return returnVal;
     }
 
-    private static boolean compareGeometries(GeometryCollection gc1, GeometryCollection gc2) {
+    static boolean compareGeometryCollections(GeometryCollection gc1, GeometryCollection gc2) {
         for (Geometry<?> geo : gc1) {
             boolean success = false;
 

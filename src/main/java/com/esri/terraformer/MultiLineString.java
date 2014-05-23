@@ -46,7 +46,33 @@ public class MultiLineString extends Geometry<LineString> {
             return equal;
         }
 
+        MultiLineString other;
+        try {
+            other = (MultiLineString) obj;
+        } catch (ClassCastException e) {
+            return false;
+        }
+
         // gotta do contains in both directions to account for duplicates that exist only on one side.
-        return obj.containsAll(this) && containsAll(obj);
+        return compareMultiLineStrings(this, other) && compareMultiLineStrings(other, this);
+    }
+
+    static boolean compareMultiLineStrings(MultiLineString mls1, MultiLineString mls2) {
+        for (LineString ls : mls1) {
+            boolean success = false;
+
+            for (LineString otherLS : mls2) {
+                if (otherLS.isEquivalentTo(ls)) {
+                    success = true;
+                    break;
+                }
+            }
+
+            if (!success) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
