@@ -23,6 +23,24 @@ public final class MultiPoint extends Geometry<Point> {
         return size() > 0;
     }
 
+    @Override
+    public boolean isEquivalentTo(GeoJson<?> obj) {
+        Boolean equal = naiveEquals(this, obj);
+        if (equal != null) {
+            return equal;
+        }
+
+        MultiPoint other;
+        try {
+            other = (MultiPoint) obj;
+        } catch(ClassCastException e) {
+            return false;
+        }
+
+        // gotta do contains in both directions to account for duplicates that exist only on one side.
+        return other.containsAll(this) && containsAll(other);
+    }
+
     public static MultiPoint decodeMultiPoint(String json) throws TerraformerException {
         if (isEmpty(json)) {
             throw new IllegalArgumentException("JSON String cannot be empty.");

@@ -23,6 +23,18 @@ public final class Point extends Geometry<Double> {
         return size() > 1;
     }
 
+    @Override
+    public boolean isEquivalentTo(GeoJson<?> obj) {
+        Point other;
+        try {
+            other = (Point) obj;
+        } catch(ClassCastException e) {
+            return false;
+        }
+
+        return equals(other);
+    }
+
     public static Point decodePoint(String json) throws TerraformerException {
         if (isEmpty(json)) {
             throw new IllegalArgumentException("JSON String cannot be empty.");

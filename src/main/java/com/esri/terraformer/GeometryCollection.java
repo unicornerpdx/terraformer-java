@@ -46,4 +46,41 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
 
         return size() > 0;
     }
+
+    @Override
+    public boolean isEquivalentTo(GeoJson<?> obj) {
+        Boolean equal = naiveEquals(this, obj);
+        if (equal != null) {
+            return equal;
+        }
+
+        GeometryCollection other;
+        try {
+            other = (GeometryCollection) obj;
+        } catch (ClassCastException e) {
+            return false;
+        }
+
+        // gotta do contains in both directions to account for duplicates that exist only on one side.
+        return compareGeometries(this, other) && compareGeometries(other, this);
+    }
+
+    private static boolean compareGeometries(GeometryCollection gc1, GeometryCollection gc2) {
+        for (Geometry<?> geo : gc1) {
+            boolean success = false;
+
+            for (Geometry<?> otherGeo : gc2) {
+                if (otherGeo.isEquivalentTo(geo)) {
+                    success = true;
+                    break;
+                }
+            }
+
+            if (!success) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
