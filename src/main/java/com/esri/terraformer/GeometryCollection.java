@@ -4,10 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
+
 // A GeometryCollection contains Geometries, and is itself a Geometry. A GeometryCollection
 // may contain other GeometryCollections.
 public class GeometryCollection extends Geometry<Geometry<?>> {
     public static final String GEOMETRIES_KEY = "geometries";
+
+    public GeometryCollection(Geometry<?> geos) {
+        addAll(Arrays.asList(geos));
+    }
 
     @Override
     public GeoJsonType getType() {

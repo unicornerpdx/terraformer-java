@@ -4,8 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
+
 public final class MultiPoint extends Geometry<Point> {
     private static final String EXCEPTION_PREFIX = "Error while parsing MultiPoint: ";
+
+    public MultiPoint(Point... points) {
+        addAll(Arrays.asList(points));
+    }
 
     @Override
     public GeoJsonType getType() {

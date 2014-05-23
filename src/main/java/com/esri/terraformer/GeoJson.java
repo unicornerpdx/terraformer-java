@@ -178,7 +178,14 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             return false;
         }
 
-        return GeoJsonType.fromJson(typeString) == type;
+        GeoJsonType foundType;
+        try {
+            foundType = GeoJsonType.fromJson(typeString);
+        } catch (RuntimeException e) {
+            return false;
+        }
+
+        return foundType == type;
     }
 
     /**

@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 // referred to collectively; primarily for supporting the GeometryCollection.
 public abstract class Geometry<T> extends GeoJson<T> {
     private static final String EXCEPTION_PREFIX = "Error while parsing Geometry: ";
-    protected static final String COORDINATES_NOT_ARRAY = "coordinates not an array";
+    protected static final String COORDINATES_NOT_ARRAY = "coordinates not a JSON Array";
 
     public static final String COORDINATES_KEY = "coordinates";
 

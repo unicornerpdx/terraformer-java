@@ -4,8 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Arrays;
+
 public final class Point extends Geometry<Double> {
     private static final String EXCEPTION_PREFIX = "Error while parsing Point: ";
+
+    public Point(Double... coords) {
+        addAll(Arrays.asList(coords));
+    }
 
     @Override
     public GeoJsonType getType() {
