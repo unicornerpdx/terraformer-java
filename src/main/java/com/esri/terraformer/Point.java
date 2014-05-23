@@ -43,7 +43,7 @@ public final class Point extends Geometry<Double> {
 
     public static Point decodePoint(String json) throws TerraformerException {
         if (isEmpty(json)) {
-            throw new IllegalArgumentException("JSON String cannot be empty.");
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
         return fromJsonObject(getObject(json));
@@ -58,7 +58,7 @@ public final class Point extends Geometry<Double> {
      */
     static Point fromJsonObject(JsonObject object) throws TerraformerException {
         if (!checkType(object, GeoJsonType.POINT)) {
-            throw new TerraformerException(EXCEPTION_PREFIX + "not of \"type\":\"Point\"");
+            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
         }
 
         return fromCoordinates(getCoordinates(object));
@@ -80,7 +80,7 @@ public final class Point extends Geometry<Double> {
             try {
                 coord = elem.getAsDouble();
             } catch (RuntimeException e) {
-                throw new TerraformerException(EXCEPTION_PREFIX + "coordinate was not numeric: " + elem);
+                throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.COORDINATE_NOT_NUMERIC + elem);
             }
 
             returnVal.add(coord);

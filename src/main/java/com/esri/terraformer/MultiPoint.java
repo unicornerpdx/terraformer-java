@@ -49,7 +49,7 @@ public final class MultiPoint extends Geometry<Point> {
 
     public static MultiPoint decodeMultiPoint(String json) throws TerraformerException {
         if (isEmpty(json)) {
-            throw new IllegalArgumentException("JSON String cannot be empty.");
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
         return fromJsonObject(getObject(json));
@@ -64,7 +64,7 @@ public final class MultiPoint extends Geometry<Point> {
      */
     static MultiPoint fromJsonObject(JsonObject object) throws TerraformerException {
         if (!checkType(object, GeoJsonType.MULTIPOINT)) {
-            throw new TerraformerException(EXCEPTION_PREFIX + "not of \"type\":\"MultiPoint\"");
+            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
         }
 
         return fromCoordinates(getCoordinates(object));

@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 // referred to collectively; primarily for supporting the GeometryCollection.
 public abstract class Geometry<T> extends GeoJson<T> {
     private static final String EXCEPTION_PREFIX = "Error while parsing Geometry: ";
-    protected static final String COORDINATES_NOT_ARRAY = "coordinates not a JSON Array";
 
     public static final String COORDINATES_KEY = "coordinates";
 
@@ -46,7 +45,7 @@ public abstract class Geometry<T> extends GeoJson<T> {
         JsonElement coordsElem = object.get(COORDINATES_KEY);
 
         if (coordsElem == null) {
-            throw new TerraformerException(EXCEPTION_PREFIX + "\"coordinates\": key not found");
+            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.COORDINATES_KEY_NOT_FOUND);
         }
 
         return coordsElem;
@@ -60,10 +59,10 @@ public abstract class Geometry<T> extends GeoJson<T> {
      * @throws TerraformerException
      */
     static JsonArray getCoordinateArray(JsonElement coordsElem, int minSize) throws TerraformerException {
-        JsonArray coords = arrayFromElement(coordsElem, COORDINATES_NOT_ARRAY);
+        JsonArray coords = arrayFromElement(coordsElem, TerraformerException.COORDINATES_NOT_ARRAY);
 
         if (coords.size() < minSize) {
-            throw new TerraformerException(EXCEPTION_PREFIX + "coordinate array too small (< " + minSize + ")");
+            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.COORDINATE_ARRAY_TOO_SHORT + minSize + ")");
         }
 
         return coords;

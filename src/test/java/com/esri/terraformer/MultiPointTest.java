@@ -15,6 +15,7 @@ public class MultiPointTest {
     private static final String INVALID_INNER_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,3.0],[100.0,\"squid\"],[101.0,1.0]]}";
     private static final String NO_COORDINATES = "{\"type\":\"MultiPoint\"}";
     private static final String COORDS_NOT_ARRAY = "{\"type\":\"MultiPoint\",\"coordinates\":\"horse\"}";
+    private static final String COORDS_TOO_SHORT = "{\"type\":\"MultiPoint\",\"coordinates\":[]}";
 
     @Test
     public void testGetType() throws Exception {
@@ -62,7 +63,7 @@ public class MultiPointTest {
         try {
             MultiPoint.decodeMultiPoint(WRONG_TYPE);
         } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains("type"));
+            assertTrue(e.getMessage().contains(TerraformerException.NOT_OF_TYPE));
             gotException = true;
         }
 
@@ -72,17 +73,7 @@ public class MultiPointTest {
         try {
             MultiPoint.decodeMultiPoint(NOT_AN_OBJECT);
         } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains("not a JSON Object"));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            MultiPoint.decodeMultiPoint(WRONG_TYPE);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains("type"));
+            assertTrue(e.getMessage().contains(TerraformerException.NOT_A_JSON_OBJECT));
             gotException = true;
         }
 
@@ -92,7 +83,7 @@ public class MultiPointTest {
         try {
             MultiPoint.decodeMultiPoint(INVALID_INNER_TYPE);
         } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains("not numeric"));
+            assertTrue(e.getMessage().contains(TerraformerException.COORDINATE_NOT_NUMERIC));
             gotException = true;
         }
 
@@ -102,7 +93,7 @@ public class MultiPointTest {
         try {
             MultiPoint.decodeMultiPoint(NO_COORDINATES);
         } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains("key not found"));
+            assertTrue(e.getMessage().contains(TerraformerException.COORDINATES_KEY_NOT_FOUND));
             gotException = true;
         }
 
@@ -112,7 +103,17 @@ public class MultiPointTest {
         try {
             MultiPoint.decodeMultiPoint(COORDS_NOT_ARRAY);
         } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(Geometry.COORDINATES_NOT_ARRAY));
+            assertTrue(e.getMessage().contains(TerraformerException.COORDINATES_NOT_ARRAY));
+            gotException = true;
+        }
+
+        assertTrue(gotException);
+        gotException = false;
+
+        try {
+            MultiPoint.decodeMultiPoint(COORDS_TOO_SHORT);
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.COORDINATE_ARRAY_TOO_SHORT));
             gotException = true;
         }
 

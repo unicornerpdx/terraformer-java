@@ -109,7 +109,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             JsonElement objElem = gson.fromJson(json, JsonElement.class);
             object = objElem.getAsJsonObject();
         } catch (RuntimeException e) {
-            throw new TerraformerException(EXCEPTION_PREFIX + "not a JSON Object");
+            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_A_JSON_OBJECT);
         }
 
         return object;
@@ -128,7 +128,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         try {
             object = objectElem.getAsJsonObject();
         } catch (RuntimeException e) {
-            throw new TerraformerException(EXCEPTION_PREFIX + error);
+            throw new TerraformerException(EXCEPTION_PREFIX, error);
         }
 
         return object;
@@ -147,7 +147,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         try {
             array = arrayElem.getAsJsonArray();
         } catch (RuntimeException e) {
-            throw new TerraformerException(EXCEPTION_PREFIX + error);
+            throw new TerraformerException(EXCEPTION_PREFIX, error);
         }
 
         return array;
