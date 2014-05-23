@@ -11,7 +11,7 @@ public class MultiPointTest {
     private static final String VALID_MULTIPOINT = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
     private static final String VALID_DIFF_ORDER = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0],[100.0,0.0]]}";
     private static final String WRONG_TYPE = "{\"type\":\"Point\",\"coordinates\":[100.0,0.0]}";
-    private static final String NO_TYPE = "{\"coordinates\":[100.0,0.0]}";
+    private static final String NO_TYPE = "{\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
     private static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
     private static final String INVALID_INNER_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,3.0],[100.0,\"squid\"],[101.0,1.0]]}";
     private static final String NO_COORDINATES = "{\"type\":\"MultiPoint\"}";
@@ -20,15 +20,17 @@ public class MultiPointTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertTrue(validMultiPoint().getType() == GeoJsonType.MULTIPOINT);
-        assertTrue(new MultiPoint().getType() == GeoJsonType.MULTIPOINT);
+        assertEquals(GeoJsonType.MULTIPOINT, validMultiPoint().getType());
+        assertEquals(GeoJsonType.MULTIPOINT, new MultiPoint().getType());
     }
 
     @Test
     public void testIsValid() throws Exception {
         assertTrue(validMultiPoint().isValid());
+        assertTrue(new MultiPoint(new MultiPoint(new Point(100d, 0d), new Point(101d, 1d))).isValid());
         assertFalse(new MultiPoint().isValid());
         assertFalse(new MultiPoint(new Point(100d)).isValid());
+        assertFalse(new MultiPoint(new Point(100d, null)).isValid());
     }
 
     @Test

@@ -218,7 +218,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_UNKNOWN_TYPE);
         }
 
-        // TODO: add the rest of the types here
+        // TODO: add the rest of the fromJsonObject() calls here
         GeoJson<?> geoJson = null;
         switch (type) {
             case POINT:
@@ -227,8 +227,21 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             case MULTIPOINT:
                 geoJson = MultiPoint.fromJsonObject(gjObject);
                 break;
+            case LINESTRING:
+                geoJson = LineString.fromJsonObject(gjObject);
+                break;
+            case MULTILINESTRING:
+                break;
+            case POLYGON:
+                break;
+            case MULTIPOLYGON:
+                break;
             case GEOMETRYCOLLECTION:
                 geoJson = GeometryCollection.fromJsonObject(gjObject);
+                break;
+            case FEATURE:
+                break;
+            case FEATURECOLLECTION:
                 break;
         }
 
