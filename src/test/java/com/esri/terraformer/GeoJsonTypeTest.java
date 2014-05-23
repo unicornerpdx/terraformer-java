@@ -1,9 +1,8 @@
 package com.esri.terraformer;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
-public class GeoJsonTypeTest extends TestCase {
+public class GeoJsonTypeTest {
     @Test
     public void testToString() throws Exception {
 

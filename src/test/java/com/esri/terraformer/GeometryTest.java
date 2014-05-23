@@ -1,9 +1,8 @@
 package com.esri.terraformer;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
-public class GeometryTest extends TestCase {
+public class GeometryTest {
     @Test
     public void testGetCoordinates() throws Exception {
 

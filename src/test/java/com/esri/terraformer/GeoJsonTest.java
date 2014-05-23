@@ -1,9 +1,8 @@
 package com.esri.terraformer;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
-public class GeoJsonTest extends TestCase {
+public class GeoJsonTest {
     @Test
     public void testNaiveEquals() throws Exception {
 

@@ -1,9 +1,8 @@
 package com.esri.terraformer;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
-public class GeometryCollectionTest extends TestCase {
+public class GeometryCollectionTest {
     @Test
     public void testGetType() throws Exception {
 
