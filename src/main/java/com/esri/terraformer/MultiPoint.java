@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import java.util.Arrays;
 
 public final class MultiPoint extends Geometry<Point> {
-    private static final String EXCEPTION_PREFIX = "Error while parsing MultiPoint: ";
+    private static final String ERROR_PREFIX = "Error while parsing MultiPoint: ";
 
     /**
      * A valid MultiPoint contains 2 or more non-null {@link Point}'s.
@@ -50,7 +50,12 @@ public final class MultiPoint extends Geometry<Point> {
             throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
-        return fromJsonObject(getObject(json));
+        JsonObject object = getObject(json, ERROR_PREFIX);
+        if (!(getType(object) == GeoJsonType.MULTIPOINT)) {
+            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
+        }
+
+        return fromJsonObject(object);
     }
 
     /**
@@ -61,22 +66,8 @@ public final class MultiPoint extends Geometry<Point> {
      * @throws TerraformerException
      */
     static MultiPoint fromJsonObject(JsonObject object) throws TerraformerException {
-        if (!(getType(object) == GeoJsonType.MULTIPOINT)) {
-            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
-        }
-
-        return fromCoordinates(getCoordinates(object));
-    }
-
-    /**
-     * Package private.
-     *
-     * @param coordsElem
-     * @return
-     * @throws TerraformerException
-     */
-    static MultiPoint fromCoordinates(JsonElement coordsElem) throws TerraformerException {
-        JsonArray coords = getCoordinateArray(coordsElem, 2);
+        // assume the type has already been checked
+        JsonArray coords = getCoordinateArray(getCoordinates(object, ERROR_PREFIX), 2, ERROR_PREFIX);
 
         MultiPoint returnVal = new MultiPoint();
         for (JsonElement elem : coords) {

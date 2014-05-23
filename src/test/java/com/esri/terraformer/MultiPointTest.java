@@ -11,6 +11,7 @@ public class MultiPointTest {
     private static final String VALID_MULTIPOINT = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
     private static final String VALID_DIFF_ORDER = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0],[100.0,0.0]]}";
     private static final String WRONG_TYPE = "{\"type\":\"Point\",\"coordinates\":[100.0,0.0]}";
+    private static final String NO_TYPE = "{\"coordinates\":[100.0,0.0]}";
     private static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
     private static final String INVALID_INNER_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,3.0],[100.0,\"squid\"],[101.0,1.0]]}";
     private static final String NO_COORDINATES = "{\"type\":\"MultiPoint\"}";
@@ -71,6 +72,16 @@ public class MultiPointTest {
         gotException = false;
 
         try {
+            MultiPoint.decodeMultiPoint(NO_TYPE);
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.NOT_OF_TYPE));
+            gotException = true;
+        }
+
+        assertTrue(gotException);
+        gotException = false;
+
+        try {
             MultiPoint.decodeMultiPoint(NOT_AN_OBJECT);
         } catch (TerraformerException e) {
             assertTrue(e.getMessage().contains(TerraformerException.NOT_A_JSON_OBJECT));
@@ -103,7 +114,7 @@ public class MultiPointTest {
         try {
             MultiPoint.decodeMultiPoint(COORDS_NOT_ARRAY);
         } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.COORDINATES_NOT_ARRAY));
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_ARRAY));
             gotException = true;
         }
 

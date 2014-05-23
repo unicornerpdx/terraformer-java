@@ -8,8 +8,6 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 
 public abstract class GeoJson<T> extends ArrayList<T> {
-    private static final String EXCEPTION_PREFIX = "Error while parsing GeoJson Object: ";
-
     public static final String TYPE_KEY = "type";
 
     /**
@@ -105,7 +103,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * @return
      * @throws TerraformerException
      */
-    static JsonObject getObject(String json) throws TerraformerException {
+    static JsonObject getObject(String json, String errorPrefix) throws TerraformerException {
         Gson gson = new Gson();
         JsonObject object;
 
@@ -113,7 +111,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             JsonElement objElem = gson.fromJson(json, JsonElement.class);
             object = objElem.getAsJsonObject();
         } catch (RuntimeException e) {
-            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_A_JSON_OBJECT);
+            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_OBJECT);
         }
 
         return object;
@@ -123,16 +121,16 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * Package private.
      *
      * @param objectElem
-     * @param error
+     * @param errorPrefix
      * @return
      * @throws TerraformerException
      */
-    static JsonObject objectFromElement(JsonElement objectElem, String error) throws TerraformerException {
+    static JsonObject objectFromElement(JsonElement objectElem, String errorPrefix) throws TerraformerException {
         JsonObject object;
         try {
             object = objectElem.getAsJsonObject();
         } catch (RuntimeException e) {
-            throw new TerraformerException(EXCEPTION_PREFIX, error);
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_OBJECT);
         }
 
         return object;
@@ -142,16 +140,16 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * Package private.
      *
      * @param arrayElem
-     * @param error
+     * @param errorPrefix
      * @return
      * @throws TerraformerException
      */
-    static JsonArray arrayFromElement(JsonElement arrayElem, String error) throws TerraformerException {
+    static JsonArray arrayFromElement(JsonElement arrayElem, String errorPrefix) throws TerraformerException {
         JsonArray array;
         try {
             array = arrayElem.getAsJsonArray();
         } catch (RuntimeException e) {
-            throw new TerraformerException(EXCEPTION_PREFIX, error);
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_ARRAY);
         }
 
         return array;
@@ -199,5 +197,30 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      */
     static boolean isEmpty(String json) {
         return json == null || json.length() <= 0;
+    }
+
+    static GeoJson<?> geoJsonFromElement(JsonElement gjElem, String errorPrefix) throws TerraformerException {
+        JsonObject gjObject = objectFromElement(gjElem, errorPrefix);
+
+        GeoJsonType type = getType(gjObject);
+        if (type == null) {
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_UNKNOWN_TYPE);
+        }
+
+        // TODO: add the rest of the types here
+        GeoJson<?> geoJson = null;
+        switch (type) {
+            case POINT:
+                geoJson = Point.fromJsonObject(gjObject);
+                break;
+            case MULTIPOINT:
+                geoJson = MultiPoint.fromJsonObject(gjObject);
+                break;
+            case GEOMETRYCOLLECTION:
+                geoJson = GeometryCollection.fromJsonObject(gjObject);
+                break;
+        }
+
+        return geoJson;
     }
 }

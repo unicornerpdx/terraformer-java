@@ -8,8 +8,6 @@ import com.google.gson.JsonObject;
 // A layer of abstraction so that our Geometry types can be
 // referred to collectively; primarily for supporting the GeometryCollection.
 public abstract class Geometry<T> extends GeoJson<T> {
-    private static final String EXCEPTION_PREFIX = "Error while parsing Geometry: ";
-
     public static final String COORDINATES_KEY = "coordinates";
 
     @Override
@@ -40,11 +38,11 @@ public abstract class Geometry<T> extends GeoJson<T> {
      * @return
      * @throws TerraformerException
      */
-    static JsonElement getCoordinates(JsonObject object) throws TerraformerException {
+    static JsonElement getCoordinates(JsonObject object, String errorPrefix) throws TerraformerException {
         JsonElement coordsElem = object.get(COORDINATES_KEY);
 
         if (coordsElem == null) {
-            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.COORDINATES_KEY_NOT_FOUND);
+            throw new TerraformerException(errorPrefix, TerraformerException.COORDINATES_KEY_NOT_FOUND);
         }
 
         return coordsElem;
@@ -57,13 +55,24 @@ public abstract class Geometry<T> extends GeoJson<T> {
      * @return
      * @throws TerraformerException
      */
-    static JsonArray getCoordinateArray(JsonElement coordsElem, int minSize) throws TerraformerException {
-        JsonArray coords = arrayFromElement(coordsElem, TerraformerException.COORDINATES_NOT_ARRAY);
+    static JsonArray getCoordinateArray(JsonElement coordsElem, int minSize, String errorPrefix)
+            throws TerraformerException {
+        JsonArray coords = arrayFromElement(coordsElem, errorPrefix);
 
         if (coords.size() < minSize) {
-            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.COORDINATE_ARRAY_TOO_SHORT + minSize + ")");
+            throw new TerraformerException(errorPrefix, TerraformerException.COORDINATE_ARRAY_TOO_SHORT +
+                    minSize + ")");
         }
 
         return coords;
+    }
+
+    static Geometry<?> geometryFromElement(JsonElement geomElem, String errorPrefix) throws TerraformerException {
+        GeoJson<?> geoJson = geoJsonFromElement(geomElem, errorPrefix);
+        if (!(geoJson instanceof Geometry<?>)) {
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_GEOMETRY);
+        }
+
+        return (Geometry<?>) geoJson;
     }
 }

@@ -2,6 +2,7 @@ package com.esri.terraformer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
@@ -9,6 +10,8 @@ import java.util.Arrays;
 // A GeometryCollection contains Geometries, and is itself a Geometry. A GeometryCollection
 // may contain other GeometryCollections.
 public class GeometryCollection extends Geometry<Geometry<?>> {
+    private static final String ERROR_PREFIX = "Error while parsing GeometryCollection: ";
+
     public static final String GEOMETRIES_KEY = "geometries";
 
     /**
@@ -74,6 +77,39 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
         return compareGeometries(this, other) && compareGeometries(other, this);
+    }
+
+    public static GeometryCollection decodeGeometryCollection(String json) throws TerraformerException {
+        if (isEmpty(json)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        JsonObject object = getObject(json, ERROR_PREFIX);
+        if (!(getType(object) == GeoJsonType.GEOMETRYCOLLECTION)) {
+            throw new TerraformerException(ERROR_PREFIX,
+                    TerraformerException.NOT_OF_TYPE + "\"GeometryCollection\"");
+        }
+
+        return fromJsonObject(object);
+    }
+
+    static GeometryCollection fromJsonObject(JsonObject object) throws TerraformerException {
+        // assume the type has already been checked
+        JsonElement geomsElem = object.get(GEOMETRIES_KEY);
+
+        if (geomsElem == null) {
+            throw new TerraformerException(ERROR_PREFIX, TerraformerException.GEOMETRIES_KEY_NOT_FOUND);
+        }
+
+        JsonArray geoms = arrayFromElement(geomsElem, ERROR_PREFIX);
+
+        GeometryCollection returnVal = new GeometryCollection();
+
+        for (JsonElement elem : geoms) {
+            returnVal.add(geometryFromElement(elem, ERROR_PREFIX));
+        }
+
+        return returnVal;
     }
 
     private static boolean compareGeometries(GeometryCollection gc1, GeometryCollection gc2) {

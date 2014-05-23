@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import java.util.Arrays;
 
 public final class Point extends Geometry<Double> {
-    private static final String EXCEPTION_PREFIX = "Error while parsing Point: ";
+    private static final String ERROR_PREFIX = "Error while parsing Point: ";
 
     /**
      * A Valid Point contains 2 or more non-null {@link Double}'s.
@@ -37,7 +37,6 @@ public final class Point extends Geometry<Double> {
     @Override
     public boolean isEquivalentTo(GeoJson<?> obj) {
         return obj.getClass() == Point.class && equals(obj);
-
     }
 
     public static Point decodePoint(String json) throws TerraformerException {
@@ -45,7 +44,12 @@ public final class Point extends Geometry<Double> {
             throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
-        return fromJsonObject(getObject(json));
+        JsonObject object = getObject(json, ERROR_PREFIX);
+        if (!(getType(object) == GeoJsonType.POINT)) {
+            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
+        }
+
+        return fromJsonObject(object);
     }
 
     /**
@@ -56,11 +60,8 @@ public final class Point extends Geometry<Double> {
      * @throws TerraformerException
      */
     static Point fromJsonObject(JsonObject object) throws TerraformerException {
-        if (!(getType(object) == GeoJsonType.POINT)) {
-            throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
-        }
-
-        return fromCoordinates(getCoordinates(object));
+        // assume the type has already been checked
+        return fromCoordinates(getCoordinates(object, ERROR_PREFIX));
     }
 
     /**
@@ -71,7 +72,7 @@ public final class Point extends Geometry<Double> {
      * @throws TerraformerException
      */
     static Point fromCoordinates(JsonElement coordsElem) throws TerraformerException {
-        JsonArray coords = getCoordinateArray(coordsElem, 2);
+        JsonArray coords = getCoordinateArray(coordsElem, 2, ERROR_PREFIX);
 
         Point returnVal = new Point();
         for (JsonElement elem : coords) {
@@ -79,7 +80,7 @@ public final class Point extends Geometry<Double> {
             try {
                 coord = elem.getAsDouble();
             } catch (RuntimeException e) {
-                throw new TerraformerException(EXCEPTION_PREFIX, TerraformerException.COORDINATE_NOT_NUMERIC + elem);
+                throw new TerraformerException(ERROR_PREFIX, TerraformerException.COORDINATE_NOT_NUMERIC + elem);
             }
 
             returnVal.add(coord);
