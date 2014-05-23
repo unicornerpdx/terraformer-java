@@ -6,9 +6,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 public abstract class GeoJson<T> extends ArrayList<T> {
     public static final String TYPE_KEY = "type";
+
+    protected GeoJson() {}
+
+    protected GeoJson(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    protected GeoJson(Collection<T> c) {
+        super(c);
+    }
 
     /**
      * Returns an enum representing one of the GeoJSON types.  See {@link GeoJsonType}.

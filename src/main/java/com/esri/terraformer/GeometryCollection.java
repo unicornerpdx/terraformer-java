@@ -58,7 +58,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
             }
         }
 
-        return size() > 0;
+        return true;
     }
 
     @Override

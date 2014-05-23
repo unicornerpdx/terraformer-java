@@ -5,10 +5,22 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.util.Collection;
+
 // A layer of abstraction so that our Geometry types can be
 // referred to collectively; primarily for supporting the GeometryCollection.
 public abstract class Geometry<T> extends GeoJson<T> {
     public static final String COORDINATES_KEY = "coordinates";
+
+    protected Geometry() {}
+
+    protected Geometry(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    protected Geometry(Collection<T> c) {
+        super(c);
+    }
 
     @Override
     public String toJson() {

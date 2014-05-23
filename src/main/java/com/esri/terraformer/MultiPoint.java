@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 public final class MultiPoint extends Geometry<Point> {
     private static final String ERROR_PREFIX = "Error while parsing MultiPoint: ";
@@ -16,6 +17,14 @@ public final class MultiPoint extends Geometry<Point> {
      */
     public MultiPoint(Point... points) {
         addAll(Arrays.asList(points));
+    }
+
+    public MultiPoint(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public MultiPoint(Collection<Point> c) {
+        super(c);
     }
 
     @Override

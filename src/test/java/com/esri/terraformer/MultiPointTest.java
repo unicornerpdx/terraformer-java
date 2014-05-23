@@ -35,12 +35,11 @@ public class MultiPointTest {
     public void testIsEquivalentTo() throws Exception {
         MultiPoint mp = validMultiPoint();
         MultiPoint otherMp = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d));
-        MultiPoint anotherMp;
+        MultiPoint anotherMp = null;
         try {
             anotherMp = MultiPoint.decodeMultiPoint(VALID_DIFF_ORDER);
         } catch (TerraformerException e) {
             fail(e.getMessage());
-            return;
         }
 
         assertTrue(mp.isEquivalentTo(otherMp));
@@ -132,12 +131,11 @@ public class MultiPointTest {
     }
 
     public MultiPoint validMultiPoint() {
-        MultiPoint mp;
+        MultiPoint mp = null;
         try {
             mp = MultiPoint.decodeMultiPoint(VALID_MULTIPOINT);
         } catch (TerraformerException e) {
             fail(e.getMessage());
-            return null;
         }
 
         return mp;

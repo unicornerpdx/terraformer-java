@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 public final class Point extends Geometry<Double> {
     private static final String ERROR_PREFIX = "Error while parsing Point: ";
@@ -16,6 +17,14 @@ public final class Point extends Geometry<Double> {
      */
     public Point(Double... coords) {
         addAll(Arrays.asList(coords));
+    }
+
+    public Point(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public Point(Collection<Double> c) {
+        super(c);
     }
 
     @Override
