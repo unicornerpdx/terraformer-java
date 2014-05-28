@@ -210,7 +210,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         return json == null || json.length() <= 0;
     }
 
-    static GeoJson<?> geoJsonFromElement(JsonElement gjElem, String errorPrefix) throws TerraformerException {
+    static GeoJson<?> geoJsonFromObjectElement(JsonElement gjElem, String errorPrefix) throws TerraformerException {
         JsonObject gjObject = objectFromElement(gjElem, errorPrefix);
 
         GeoJsonType type = getType(gjObject);

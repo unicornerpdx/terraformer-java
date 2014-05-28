@@ -65,7 +65,10 @@ public class LineString extends Geometry<Point> {
             return compareLinearRings(this, other);
         }
 
-        return equals(other);
+        LineString reversed = new LineString(other);
+        Collections.reverse(reversed);
+
+        return equals(other) || equals(reversed);
     }
 
     public boolean isLinearRing() {

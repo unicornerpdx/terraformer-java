@@ -106,7 +106,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         GeometryCollection returnVal = new GeometryCollection();
 
         for (JsonElement elem : geoms) {
-            returnVal.add(geometryFromElement(elem, ERROR_PREFIX));
+            returnVal.add(geometryFromObjectElement(elem, ERROR_PREFIX));
         }
 
         return returnVal;

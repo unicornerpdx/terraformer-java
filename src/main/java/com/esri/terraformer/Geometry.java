@@ -79,8 +79,8 @@ public abstract class Geometry<T> extends GeoJson<T> {
         return coords;
     }
 
-    static Geometry<?> geometryFromElement(JsonElement geomElem, String errorPrefix) throws TerraformerException {
-        GeoJson<?> geoJson = geoJsonFromElement(geomElem, errorPrefix);
+    static Geometry<?> geometryFromObjectElement(JsonElement geomElem, String errorPrefix) throws TerraformerException {
+        GeoJson<?> geoJson = geoJsonFromObjectElement(geomElem, errorPrefix);
         if (!(geoJson instanceof Geometry<?>)) {
             throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_GEOMETRY);
         }
