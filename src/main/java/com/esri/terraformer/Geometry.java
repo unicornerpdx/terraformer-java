@@ -79,6 +79,14 @@ public abstract class Geometry<T> extends GeoJson<T> {
         return coords;
     }
 
+    /**
+     * Package private.
+     *
+     * @param geomElem
+     * @param errorPrefix
+     * @return
+     * @throws TerraformerException
+     */
     static Geometry<?> geometryFromObjectElement(JsonElement geomElem, String errorPrefix) throws TerraformerException {
         GeoJson<?> geoJson = geoJsonFromObjectElement(geomElem, errorPrefix);
         if (!(geoJson instanceof Geometry<?>)) {

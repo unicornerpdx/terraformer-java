@@ -35,22 +35,6 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
     }
 
     @Override
-    protected JsonObject toJsonObject(Gson gson) {
-        JsonObject object = new JsonObject();
-        object.addProperty(TYPE_KEY, getType().toString());
-
-        JsonArray geometries = new JsonArray();
-
-        for (Geometry geo : this) {
-            geometries.add(geo.toJsonObject(gson));
-        }
-
-        object.add(GEOMETRIES_KEY, geometries);
-
-        return object;
-    }
-
-    @Override
     public boolean isValid() {
         for (Geometry geo : this) {
             if (geo == null || !geo.isValid()) {
@@ -79,12 +63,29 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         return compareGeometryCollections(this, other) && compareGeometryCollections(other, this);
     }
 
-    public static GeometryCollection decodeGeometryCollection(String json) throws TerraformerException {
-        if (isEmpty(json)) {
+    @Override
+    protected JsonObject toJsonObject(Gson gson) {
+        JsonObject object = new JsonObject();
+        object.addProperty(TYPE_KEY, getType().toString());
+
+        JsonArray geometries = new JsonArray();
+
+        for (Geometry geo : this) {
+            geometries.add(geo.toJsonObject(gson));
+        }
+
+        object.add(GEOMETRIES_KEY, geometries);
+
+        return object;
+    }
+
+    public static GeometryCollection decodeGeometryCollection(String geometryCollectionJSON)
+            throws TerraformerException {
+        if (isEmpty(geometryCollectionJSON)) {
             throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
-        JsonObject object = getObject(json, ERROR_PREFIX);
+        JsonObject object = getObject(geometryCollectionJSON, ERROR_PREFIX);
         if (!(getType(object) == GeoJsonType.GEOMETRYCOLLECTION)) {
             throw new TerraformerException(ERROR_PREFIX,
                     TerraformerException.NOT_OF_TYPE + "\"GeometryCollection\"");

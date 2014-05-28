@@ -75,12 +75,12 @@ public class LineString extends Geometry<Point> {
         return size() > 3 && get(0).equals(get(size() -1));
     }
 
-    public static LineString decodeLineString(String json) throws TerraformerException {
-        if (isEmpty(json)) {
+    public static LineString decodeLineString(String lineStringJSON) throws TerraformerException {
+        if (isEmpty(lineStringJSON)) {
             throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
-        JsonObject object = getObject(json, ERROR_PREFIX);
+        JsonObject object = getObject(lineStringJSON, ERROR_PREFIX);
         if (!(getType(object) == GeoJsonType.LINESTRING)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"LineString\"");
         }
@@ -127,7 +127,7 @@ public class LineString extends Geometry<Point> {
             return false;
         }
 
-        // copy ls1 and ls2 for editing
+        // copy lr1 and lr2 for editing
         LineString lr1Copy = new LineString(lr1);
         LineString lr2Copy = new LineString(lr2);
         LineString lr2Reverse = new LineString(lr2);

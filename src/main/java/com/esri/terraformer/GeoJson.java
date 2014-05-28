@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class GeoJson<T> extends ArrayList<T> {
+    private static final String ERROR_PREFIX = "Error while parsing arbitrary GeoJSON: ";
+
     public static final String TYPE_KEY = "type";
 
     protected GeoJson() {}
@@ -63,13 +65,8 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         return null;
     }
 
-    public static GeoJson<?> decodeJson(String json) {
-        // create object, check for type value
-        // if type value is missing or not a string, exception
-        // use GeoJsonType.valueOf() to convert to enum
-        // (inside try catch for runtime error when the string doesn't match)
-        // switch on enum and use class specific methods for generation.
-        return null;
+    public static GeoJson<?> decodeJson(String json) throws TerraformerException {
+        return geoJsonFromObjectElement(getElement(json, ERROR_PREFIX), ERROR_PREFIX);
     }
 
     /**
@@ -111,10 +108,39 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * Package private.
      *
      * @param json
+     * @param errorPrefix
+     * @return
+     * @throws TerraformerException
+     */
+    static JsonElement getElement(String json, String errorPrefix) throws TerraformerException {
+        if (isEmpty(json)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        Gson gson = new Gson();
+        JsonElement elem;
+
+        try {
+            elem = gson.fromJson(json, JsonElement.class);
+        } catch (RuntimeException e) {
+            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_OBJECT);
+        }
+
+        return elem;
+    }
+
+    /**
+     * Package private.
+     *
+     * @param json
      * @return
      * @throws TerraformerException
      */
     static JsonObject getObject(String json, String errorPrefix) throws TerraformerException {
+        if (isEmpty(json)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
         Gson gson = new Gson();
         JsonObject object;
 

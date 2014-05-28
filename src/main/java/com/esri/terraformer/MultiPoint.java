@@ -54,12 +54,12 @@ public final class MultiPoint extends Geometry<Point> {
         return obj.containsAll(this) && containsAll(obj);
     }
 
-    public static MultiPoint decodeMultiPoint(String json) throws TerraformerException {
-        if (isEmpty(json)) {
+    public static MultiPoint decodeMultiPoint(String multiPointJSON) throws TerraformerException {
+        if (isEmpty(multiPointJSON)) {
             throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
-        JsonObject object = getObject(json, ERROR_PREFIX);
+        JsonObject object = getObject(multiPointJSON, ERROR_PREFIX);
         if (!(getType(object) == GeoJsonType.MULTIPOINT)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
         }

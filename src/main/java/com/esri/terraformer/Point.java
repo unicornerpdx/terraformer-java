@@ -48,12 +48,12 @@ public final class Point extends Geometry<Double> {
         return obj.getClass() == Point.class && equals(obj);
     }
 
-    public static Point decodePoint(String json) throws TerraformerException {
-        if (isEmpty(json)) {
+    public static Point decodePoint(String pointJSON) throws TerraformerException {
+        if (isEmpty(pointJSON)) {
             throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
         }
 
-        JsonObject object = getObject(json, ERROR_PREFIX);
+        JsonObject object = getObject(pointJSON, ERROR_PREFIX);
         if (!(getType(object) == GeoJsonType.POINT)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
         }
