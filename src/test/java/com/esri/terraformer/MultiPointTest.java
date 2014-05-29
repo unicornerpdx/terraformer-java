@@ -8,15 +8,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class MultiPointTest {
-    private static final String VALID_MULTIPOINT = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
-    private static final String VALID_DIFF_ORDER = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0],[100.0,0.0]]}";
-    private static final String WRONG_TYPE = "{\"type\":\"Point\",\"coordinates\":[100.0,0.0]}";
-    private static final String NO_TYPE = "{\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
-    private static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
-    private static final String INVALID_INNER_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,3.0],[100.0,\"squid\"],[101.0,1.0]]}";
-    private static final String NO_COORDINATES = "{\"type\":\"MultiPoint\"}";
-    private static final String COORDS_NOT_ARRAY = "{\"type\":\"MultiPoint\",\"coordinates\":\"horse\"}";
-    private static final String COORDS_TOO_SHORT = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0]]}";
+    static final String VALID_MULTIPOINT = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
+    static final String VALID_DIFF_ORDER = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0],[100.0,0.0]]}";
+    static final String WRONG_TYPE = "{\"type\":\"Point\",\"coordinates\":[100.0,0.0]}";
+    static final String NO_TYPE = "{\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
+    static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
+    static final String INVALID_INNER_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,3.0],[100.0,\"squid\"],[101.0,1.0]]}";
+    static final String NO_COORDINATES = "{\"type\":\"MultiPoint\"}";
+    static final String COORDS_NOT_ARRAY = "{\"type\":\"MultiPoint\",\"coordinates\":\"horse\"}";
+    static final String COORDS_TOO_SHORT = "{\"type\":\"MultiPoint\",\"coordinates\":[[101.0,1.0]]}";
 
     @Test
     public void testGetType() throws Exception {
@@ -54,6 +54,16 @@ public class MultiPointTest {
         assertFalse(mp.isEquivalentTo(new MultiPoint()));
         assertFalse(mp.isEquivalentTo(new MultiPoint(new Point(100d, 0d))));
         assertFalse(mp.isEquivalentTo(new MultiPoint(new Point(100d, 0d), new Point(100d, 1d))));
+    }
+
+    @Test
+    public void testToJson()  throws Exception {
+
+    }
+
+    @Test
+    public void testToJsonObject()  throws Exception {
+
     }
 
     @Test
@@ -132,14 +142,7 @@ public class MultiPointTest {
         assertTrue(gotException);
     }
 
-    public MultiPoint validMultiPoint() {
-        MultiPoint mp = null;
-        try {
-            mp = MultiPoint.decodeMultiPoint(VALID_MULTIPOINT);
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
-
-        return mp;
+    public MultiPoint validMultiPoint() throws TerraformerException {
+        return MultiPoint.decodeMultiPoint(VALID_MULTIPOINT);
     }
 }

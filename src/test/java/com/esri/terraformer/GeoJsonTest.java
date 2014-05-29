@@ -1,6 +1,5 @@
 package com.esri.terraformer;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.junit.Test;
@@ -8,11 +7,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class GeoJsonTest {
-    private static final String MULTIPOINT = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
-
     @Test
     public void testDecodeJson() throws Exception {
         // TODO once all the geometries are written
@@ -53,18 +49,13 @@ public class GeoJsonTest {
         try {
             GeoJson.getElement("[", "derp");
         } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.NOT_VALID_JSON));
             gotException = true;
         }
 
         assertTrue(gotException);
 
-        JsonElement elem = null;
-        try {
-            elem = GeoJson.getElement(MULTIPOINT, "derp");
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
-        assertNotEquals(null, elem);
+        assertNotEquals(null, GeoJson.getElement(MultiPointTest.VALID_MULTIPOINT, "derp"));
     }
 
     @Test
@@ -82,42 +73,27 @@ public class GeoJsonTest {
         try {
             GeoJson.getObject("[", "derp");
         } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.NOT_A_JSON_OBJECT));
             gotException = true;
         }
 
         assertTrue(gotException);
 
-        JsonObject obj = null;
-        try {
-            obj = GeoJson.getObject(MULTIPOINT, "derp");
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
-        assertNotEquals(null, obj);
+        assertNotEquals(null, GeoJson.getObject(MultiPointTest.VALID_MULTIPOINT, "derp"));
     }
 
     @Test
     public void testObjectFromElement() throws Exception {
-        JsonElement arrayElem = null;
-        JsonElement objElem = null;
-        try {
-            arrayElem = GeoJson.getElement("[1,2,3,4,5]", "derp");
-            objElem = GeoJson.getElement("{\"derp\":\"herp\"}", "derp");
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        JsonElement arrayElem = GeoJson.getElement("[1,2,3,4,5]", "derp");
+        JsonElement objElem = GeoJson.getElement("{\"derp\":\"herp\"}", "derp");
 
-        try {
-            JsonArray array = GeoJson.arrayFromElement(arrayElem, "derp");
-            assertNotEquals(null, array);
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        assertNotEquals(null, GeoJson.arrayFromElement(arrayElem, "derp"));
 
         boolean gotException = false;
         try {
             GeoJson.arrayFromElement(objElem, "derp");
         } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_ARRAY));
             gotException = true;
         }
 
@@ -126,26 +102,16 @@ public class GeoJsonTest {
 
     @Test
     public void testArrayFromElement() throws Exception {
-        JsonElement arrayElem = null;
-        JsonElement objElem = null;
-        try {
-            arrayElem = GeoJson.getElement("[1,2,3,4,5]", "derp");
-            objElem = GeoJson.getElement("{\"derp\":\"herp\"}", "derp");
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        JsonElement arrayElem = GeoJson.getElement("[1,2,3,4,5]", "derp");
+        JsonElement objElem = GeoJson.getElement("{\"derp\":\"herp\"}", "derp");
 
-        try {
-            JsonObject obj = GeoJson.objectFromElement(objElem, "derp");
-            assertNotEquals(null, obj);
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        assertNotEquals(null, GeoJson.objectFromElement(objElem, "derp"));
 
         boolean gotException = false;
         try {
             GeoJson.objectFromElement(arrayElem, "derp");
         } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_OBJECT));
             gotException = true;
         }
 
@@ -156,34 +122,19 @@ public class GeoJsonTest {
     public void testGetType() throws Exception {
         assertEquals(null, GeoJson.getType(null));
 
-        try {
-            JsonObject typeless = GeoJson.getObject("{\"coordinates\":[[100.0,0.0],[101.0,1.0]]}", "derp");
-            assertEquals(null, GeoJson.getType(typeless));
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        JsonObject typeless = GeoJson.getObject("{\"coordinates\":[[100.0,0.0],[101.0,1.0]]}", "derp");
+        assertEquals(null, GeoJson.getType(typeless));
 
-        try {
-            JsonObject numericType = GeoJson.getObject("{\"type\":5,\"coordinates\":[[100.0,0.0],[101.0,1.0]]}",
-                    "derp");
-            assertEquals(null, GeoJson.getType(numericType));
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        JsonObject numericType = GeoJson.getObject("{\"type\":5,\"coordinates\":[[100.0,0.0],[101.0,1.0]]}",
+                "derp");
+        assertEquals(null, GeoJson.getType(numericType));
 
-        try {
-            JsonObject unknownType = GeoJson.getObject("{\"type\":\"nknwn\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}",
-                    "derp");
-            assertEquals(null, GeoJson.getType(unknownType));
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        JsonObject unknownType = GeoJson.getObject("{\"type\":\"nknwn\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}",
+                "derp");
+        assertEquals(null, GeoJson.getType(unknownType));
 
-        try {
-            assertEquals(GeoJsonType.MULTIPOINT, GeoJson.getType(GeoJson.getObject(MULTIPOINT, "derp")));
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        assertEquals(GeoJsonType.MULTIPOINT, GeoJson.getType(GeoJson.getObject(MultiPointTest.VALID_MULTIPOINT,
+                "derp")));
     }
 
     @Test

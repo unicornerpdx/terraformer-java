@@ -54,10 +54,10 @@ public class MultiLineString extends Geometry<LineString> {
         }
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
-        return compareMultiLineStrings(this, other) && compareMultiLineStrings(other, this);
+        return multiLineStringContainsOther(this, other) && multiLineStringContainsOther(other, this);
     }
 
-    static boolean compareMultiLineStrings(MultiLineString mls1, MultiLineString mls2) {
+    static boolean multiLineStringContainsOther(MultiLineString mls1, MultiLineString mls2) {
         for (LineString ls : mls1) {
             boolean success = false;
 

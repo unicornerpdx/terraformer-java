@@ -5,17 +5,16 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class PointTest {
-    private static final String VALID_POINT = "{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]}";
-    private static final String WRONG_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
-    private static final String NO_TYPE = "{\"coordinates\":[100.0,0.0]}";
-    private static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
-    private static final String INVALID_INNER_TYPE = "{\"type\":\"Point\",\"coordinates\":[100.0,\"squid\"]}";
-    private static final String NO_COORDINATES = "{\"type\":\"Point\"}";
-    private static final String COORDS_NOT_ARRAY = "{\"type\":\"Point\",\"coordinates\":\"horse\"}";
-    private static final String COORDS_TOO_SHORT = "{\"type\":\"Point\",\"coordinates\":[100.0]}";
+    static final String VALID_POINT = "{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]}";
+    static final String WRONG_TYPE = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
+    static final String NO_TYPE = "{\"coordinates\":[100.0,0.0]}";
+    static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
+    static final String INVALID_INNER_TYPE = "{\"type\":\"Point\",\"coordinates\":[100.0,\"squid\"]}";
+    static final String NO_COORDINATES = "{\"type\":\"Point\"}";
+    static final String COORDS_NOT_ARRAY = "{\"type\":\"Point\",\"coordinates\":\"horse\"}";
+    static final String COORDS_TOO_SHORT = "{\"type\":\"Point\",\"coordinates\":[100.0]}";
 
     @Test
     public void testGetType() throws Exception {
@@ -43,6 +42,16 @@ public class PointTest {
         assertFalse(p.isEquivalentTo(new Point(100d,0d)));
         assertFalse(p.isEquivalentTo(new Point(100d,0d,90d)));
         assertFalse(p.isEquivalentTo(new Point(100d,0d,90d,null)));
+    }
+
+    @Test
+    public void testToJson()  throws Exception {
+
+    }
+
+    @Test
+    public void testToJsonObject()  throws Exception {
+
     }
 
     @Test
@@ -121,14 +130,7 @@ public class PointTest {
         assertTrue(gotException);
     }
 
-    public Point validPoint() {
-        Point p = null;
-        try {
-            p = Point.decodePoint(VALID_POINT);
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
-
-        return p;
+    public Point validPoint() throws TerraformerException {
+        return Point.decodePoint(VALID_POINT);
     }
 }

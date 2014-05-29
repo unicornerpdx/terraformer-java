@@ -2,6 +2,7 @@ package com.esri.terraformer;
 
 public class TerraformerException extends Exception {
     public static final String JSON_STRING_EMPTY = "JSON String cannot be empty.";
+    public static final String NOT_VALID_JSON = "not valid JSON";
     public static final String NOT_A_JSON_OBJECT = "not a JSON Object";
     public static final String NOT_OF_TYPE = "not of \"type\":";
     public static final String COORDINATE_NOT_NUMERIC = "coordinate was not numeric: ";

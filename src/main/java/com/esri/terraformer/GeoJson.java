@@ -123,7 +123,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         try {
             elem = gson.fromJson(json, JsonElement.class);
         } catch (RuntimeException e) {
-            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_OBJECT);
+            throw new TerraformerException(errorPrefix, TerraformerException.NOT_VALID_JSON);
         }
 
         return elem;

@@ -60,7 +60,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         }
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
-        return compareGeometryCollections(this, other) && compareGeometryCollections(other, this);
+        return geometryCollectionContainsOther(this, other) && geometryCollectionContainsOther(other, this);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         return returnVal;
     }
 
-    static boolean compareGeometryCollections(GeometryCollection gc1, GeometryCollection gc2) {
+    static boolean geometryCollectionContainsOther(GeometryCollection gc1, GeometryCollection gc2) {
         for (Geometry<?> geo : gc1) {
             boolean success = false;
 

@@ -12,4 +12,9 @@ public class GeometryTest {
     public void testGetCoordinateArray() throws Exception {
 
     }
+
+    @Test
+    public void testGeometryFromObjectElement() throws Exception {
+        // TODO once all the geometries are written
+    }
 }
