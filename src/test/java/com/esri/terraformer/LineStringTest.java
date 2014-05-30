@@ -37,7 +37,7 @@ public class LineStringTest {
         assertTrue(new LineString(new LineString(new Point(100d, 0d), new Point(101d, 1d))).isValid());
         assertFalse(new LineString().isValid());
         assertFalse(new LineString(new Point(100d)).isValid());
-        assertFalse(new LineString(new Point(100d, null)).isValid());
+        assertFalse(new LineString(new Point(100d, 0d), null).isValid());
     }
 
     @Test

@@ -97,7 +97,18 @@ public class LineString extends Geometry<Point> {
      */
     static LineString fromJsonObject(JsonObject object) throws TerraformerException {
         // assume the type has already been checked
-        JsonArray coords = getCoordinateArray(getCoordinates(object, ERROR_PREFIX), 2, ERROR_PREFIX);
+        return fromCoordinates(getCoordinates(object, ERROR_PREFIX));
+    }
+
+    /**
+     * Package private.
+     *
+     * @param coordsElem
+     * @return
+     * @throws TerraformerException
+     */
+    static LineString fromCoordinates(JsonElement coordsElem) throws TerraformerException {
+        JsonArray coords = getCoordinateArray(coordsElem, 2, ERROR_PREFIX);
 
         LineString returnVal = new LineString();
         for (JsonElement elem : coords) {
