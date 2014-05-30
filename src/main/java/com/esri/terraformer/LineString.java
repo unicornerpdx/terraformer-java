@@ -49,6 +49,11 @@ public class LineString extends Geometry<Point> {
 
     @Override
     public boolean isEquivalentTo(GeoJson<?> obj) {
+        Boolean equal = naiveEquals(this, obj);
+        if (equal != null) {
+            return equal;
+        }
+
         LineString other;
         try {
             other = (LineString) obj;

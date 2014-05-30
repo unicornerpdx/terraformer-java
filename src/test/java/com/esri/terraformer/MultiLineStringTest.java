@@ -47,7 +47,7 @@ public class MultiLineStringTest {
         assertTrue(otherLs.isEquivalentTo(anotherLs));
         assertTrue(anotherLs.isEquivalentTo(ls));
         assertTrue(anotherLs.isEquivalentTo(otherLs));
-        assertFalse(ls.isEquivalentTo(new Point(100d, 0d)));
+        assertFalse(ls.isEquivalentTo(new LineString(new Point(100d, 0d), new Point(101d, 1d))));
         assertFalse(ls.isEquivalentTo(new MultiLineString()));
         assertFalse(ls.isEquivalentTo(new MultiLineString(new LineString(new Point(100d, 0d), new Point(101d, 1d)))));
         assertFalse(ls.isEquivalentTo(new MultiLineString(new LineString(new Point(100d, 0d), new Point(101d, 1d)),
