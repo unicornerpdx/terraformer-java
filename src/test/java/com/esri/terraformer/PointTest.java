@@ -1,5 +1,7 @@
 package com.esri.terraformer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -18,13 +20,13 @@ public class PointTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.POINT, validPoint().getType());
+        assertEquals(GeoJsonType.POINT, Point.decodePoint(VALID_POINT).getType());
         assertEquals(GeoJsonType.POINT, new Point().getType());
     }
 
     @Test
     public void testIsValid() throws Exception {
-        assertTrue(validPoint().isValid());
+        assertTrue(Point.decodePoint(VALID_POINT).isValid());
         assertTrue(new Point(new Point(100d, 0d)).isValid());
         assertFalse(new Point().isValid());
         assertFalse(new Point(100d, null).isValid());
@@ -33,7 +35,7 @@ public class PointTest {
 
     @Test
     public void testIsEquivalentTo() throws Exception {
-        Point p = validPoint();
+        Point p = Point.decodePoint(VALID_POINT);
         Point otherP = new Point(100d,0d,90d,90d);
         assertTrue(p.isEquivalentTo(otherP));
         assertTrue(otherP.isEquivalentTo(p));
@@ -46,17 +48,19 @@ public class PointTest {
 
     @Test
     public void testToJson()  throws Exception {
-
+        assertEquals(VALID_POINT, new Point(100d, 0d, 90d, 90d).toJson());
     }
 
     @Test
     public void testToJsonObject()  throws Exception {
-
+        JsonObject obj1 = new Point(100d, 0d, 90d, 90d).toJsonObject(null);
+        JsonObject obj2 = new Point(100d, 0d, 90d, 90d).toJsonObject(new Gson());
+        assertEquals(obj1.toString(), obj2.toString());
     }
 
     @Test
     public void testDecodePoint() throws Exception {
-        assertEquals(VALID_POINT, validPoint().toJson());
+        assertEquals(VALID_POINT, Point.decodePoint(VALID_POINT).toJson());
 
         boolean gotException = false;
 
@@ -128,9 +132,5 @@ public class PointTest {
         }
 
         assertTrue(gotException);
-    }
-
-    public Point validPoint() throws TerraformerException {
-        return Point.decodePoint(VALID_POINT);
     }
 }

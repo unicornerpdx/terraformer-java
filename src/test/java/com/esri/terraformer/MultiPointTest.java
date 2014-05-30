@@ -1,11 +1,12 @@
 package com.esri.terraformer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class MultiPointTest {
     static final String VALID_MULTIPOINT = "{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
@@ -20,13 +21,13 @@ public class MultiPointTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.MULTIPOINT, validMultiPoint().getType());
+        assertEquals(GeoJsonType.MULTIPOINT, MultiPoint.decodeMultiPoint(VALID_MULTIPOINT).getType());
         assertEquals(GeoJsonType.MULTIPOINT, new MultiPoint().getType());
     }
 
     @Test
     public void testIsValid() throws Exception {
-        assertTrue(validMultiPoint().isValid());
+        assertTrue(MultiPoint.decodeMultiPoint(VALID_MULTIPOINT).isValid());
         assertTrue(new MultiPoint(new MultiPoint(new Point(100d, 0d), new Point(101d, 1d))).isValid());
         assertFalse(new MultiPoint().isValid());
         assertFalse(new MultiPoint(new Point(100d)).isValid());
@@ -35,14 +36,9 @@ public class MultiPointTest {
 
     @Test
     public void testIsEquivalentTo() throws Exception {
-        MultiPoint mp = validMultiPoint();
+        MultiPoint mp = MultiPoint.decodeMultiPoint(VALID_MULTIPOINT);
         MultiPoint otherMp = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d));
-        MultiPoint anotherMp = null;
-        try {
-            anotherMp = MultiPoint.decodeMultiPoint(VALID_DIFF_ORDER);
-        } catch (TerraformerException e) {
-            fail(e.getMessage());
-        }
+        MultiPoint anotherMp = MultiPoint.decodeMultiPoint(VALID_DIFF_ORDER);
 
         assertTrue(mp.isEquivalentTo(otherMp));
         assertTrue(mp.isEquivalentTo(anotherMp));
@@ -58,17 +54,19 @@ public class MultiPointTest {
 
     @Test
     public void testToJson()  throws Exception {
-
+        assertEquals(VALID_MULTIPOINT, new MultiPoint(new Point(100d, 0d), new Point(101d, 1d)).toJson());
     }
 
     @Test
     public void testToJsonObject()  throws Exception {
-
+        JsonObject obj1 = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d)).toJsonObject(null);
+        JsonObject obj2 = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d)).toJsonObject(new Gson());
+        assertEquals(obj1.toString(), obj2.toString());
     }
 
     @Test
     public void testDecodeMultiPoint() throws Exception {
-        assertEquals(VALID_MULTIPOINT, validMultiPoint().toJson());
+        assertEquals(VALID_MULTIPOINT, MultiPoint.decodeMultiPoint(VALID_MULTIPOINT).toJson());
 
         boolean gotException = false;
 
@@ -140,9 +138,5 @@ public class MultiPointTest {
         }
 
         assertTrue(gotException);
-    }
-
-    public MultiPoint validMultiPoint() throws TerraformerException {
-        return MultiPoint.decodeMultiPoint(VALID_MULTIPOINT);
     }
 }
