@@ -34,7 +34,7 @@ public class LineStringTest {
     @Test
     public void testIsValid() throws Exception {
         assertTrue(LineString.decodeLineString(VALID_LINE_STRING).isValid());
-        assertTrue(new LineString(new LineString(new Point(100d, 0d), new Point(101d, 1d))).isValid());
+        assertTrue(new LineString(getLineString()).isValid());
         assertFalse(new LineString().isValid());
         assertFalse(new LineString(new Point(100d)).isValid());
         assertFalse(new LineString(new Point(100d, 0d), null).isValid());
@@ -43,7 +43,7 @@ public class LineStringTest {
     @Test
     public void testIsEquivalentTo() throws Exception {
         LineString ls = LineString.decodeLineString(VALID_LINE_STRING);
-        LineString otherLs = new LineString(new Point(100d, 0d), new Point(101d, 1d));
+        LineString otherLs = getLineString();
         LineString anotherLs = LineString.decodeLineString(VALID_DIFF_ORDER);
 
         assertTrue(ls.isEquivalentTo(otherLs));
@@ -60,13 +60,13 @@ public class LineStringTest {
 
     @Test
     public void testToJson()  throws Exception {
-        assertEquals(VALID_LINE_STRING, new LineString(new Point(100d, 0d), new Point(101d, 1d)).toJson());
+        assertEquals(VALID_LINE_STRING, getLineString().toJson());
     }
 
     @Test
     public void testToJsonObject()  throws Exception {
-        JsonObject obj1 = new LineString(new Point(100d, 0d), new Point(101d, 1d)).toJsonObject(null);
-        JsonObject obj2 = new LineString(new Point(100d, 0d), new Point(101d, 1d)).toJsonObject(new Gson());
+        JsonObject obj1 = getLineString().toJsonObject(null);
+        JsonObject obj2 = getLineString().toJsonObject(new Gson());
         assertEquals(obj1.toString(), obj2.toString());
     }
 
@@ -160,5 +160,9 @@ public class LineStringTest {
         }
 
         assertTrue(gotException);
+    }
+
+    static LineString getLineString() {
+        return new LineString(new Point(100d, 0d), new Point(101d, 1d));
     }
 }

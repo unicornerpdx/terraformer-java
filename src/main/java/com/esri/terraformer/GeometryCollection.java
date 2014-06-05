@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 // A GeometryCollection contains Geometries, and is itself a Geometry. A GeometryCollection
 // may contain other GeometryCollections.
@@ -17,10 +18,29 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
     /**
      * A valid GeometryCollection contains 0 or more non-null {@link Geometry}'s.
      *
+     * A {@link Geometry} is one of the following:
+     * <ul>
+     *     <li>{@link Point}</li>
+     *     <li>{@link MultiPoint}</li>
+     *     <li>{@link LineString}</li>
+     *     <li>{@link MultiLineString}</li>
+     *     <li>{@link Polygon}</li>
+     *     <li>{@link MultiPolygon}</li>
+     *     <li>{@link GeometryCollection}</li>
+     * </ul>
+     *
      * @param geometries
      */
     public GeometryCollection(Geometry<?>... geometries) {
         addAll(Arrays.asList(geometries));
+    }
+
+    public GeometryCollection(int initialCapacity) {
+        super(initialCapacity);
+    }
+
+    public GeometryCollection(Collection<Geometry<?>> c) {
+        super(c);
     }
 
     @Override
@@ -105,7 +125,6 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         JsonArray geoms = arrayFromElement(geomsElem, ERROR_PREFIX);
 
         GeometryCollection returnVal = new GeometryCollection();
-
         for (JsonElement elem : geoms) {
             returnVal.add(geometryFromObjectElement(elem, ERROR_PREFIX));
         }

@@ -300,7 +300,7 @@ public class MultiPolygonTest {
         assertTrue(gotException);
     }
 
-    static MultiPolygon getMultiPolygon() throws Exception {
+    static MultiPolygon getMultiPolygon() {
         return new MultiPolygon(new Polygon(
                 new LineString(
                         new Point(100d, 0d),

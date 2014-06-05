@@ -28,7 +28,7 @@ public class MultiPointTest {
     @Test
     public void testIsValid() throws Exception {
         assertTrue(MultiPoint.decodeMultiPoint(VALID_MULTIPOINT).isValid());
-        assertTrue(new MultiPoint(new MultiPoint(new Point(100d, 0d), new Point(101d, 1d))).isValid());
+        assertTrue(new MultiPoint(getMultiPoint()).isValid());
         assertFalse(new MultiPoint().isValid());
         assertFalse(new MultiPoint(new Point(100d)).isValid());
         assertFalse(new MultiPoint(new Point(100d, null)).isValid());
@@ -37,7 +37,7 @@ public class MultiPointTest {
     @Test
     public void testIsEquivalentTo() throws Exception {
         MultiPoint mp = MultiPoint.decodeMultiPoint(VALID_MULTIPOINT);
-        MultiPoint otherMp = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d));
+        MultiPoint otherMp = getMultiPoint();
         MultiPoint anotherMp = MultiPoint.decodeMultiPoint(VALID_DIFF_ORDER);
 
         assertTrue(mp.isEquivalentTo(otherMp));
@@ -54,13 +54,13 @@ public class MultiPointTest {
 
     @Test
     public void testToJson()  throws Exception {
-        assertEquals(VALID_MULTIPOINT, new MultiPoint(new Point(100d, 0d), new Point(101d, 1d)).toJson());
+        assertEquals(VALID_MULTIPOINT, getMultiPoint().toJson());
     }
 
     @Test
     public void testToJsonObject()  throws Exception {
-        JsonObject obj1 = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d)).toJsonObject(null);
-        JsonObject obj2 = new MultiPoint(new Point(100d, 0d), new Point(101d, 1d)).toJsonObject(new Gson());
+        JsonObject obj1 = getMultiPoint().toJsonObject(null);
+        JsonObject obj2 = getMultiPoint().toJsonObject(new Gson());
         assertEquals(obj1.toString(), obj2.toString());
     }
 
@@ -138,5 +138,9 @@ public class MultiPointTest {
         }
 
         assertTrue(gotException);
+    }
+
+    static MultiPoint getMultiPoint() {
+        return new MultiPoint(new Point(100d, 0d), new Point(101d, 1d));
     }
 }

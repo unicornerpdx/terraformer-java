@@ -257,10 +257,13 @@ public abstract class GeoJson<T> extends ArrayList<T> {
                 geoJson = LineString.fromJsonObject(gjObject);
                 break;
             case MULTILINESTRING:
+                geoJson = MultiLineString.fromJsonObject(gjObject);
                 break;
             case POLYGON:
+                geoJson = Polygon.fromJsonObject(gjObject);
                 break;
             case MULTIPOLYGON:
+                geoJson = MultiPolygon.fromJsonObject(gjObject);
                 break;
             case GEOMETRYCOLLECTION:
                 geoJson = GeometryCollection.fromJsonObject(gjObject);

@@ -27,7 +27,7 @@ public class PointTest {
     @Test
     public void testIsValid() throws Exception {
         assertTrue(Point.decodePoint(VALID_POINT).isValid());
-        assertTrue(new Point(new Point(100d, 0d)).isValid());
+        assertTrue(new Point(getPoint()).isValid());
         assertFalse(new Point().isValid());
         assertFalse(new Point(100d, null).isValid());
         assertFalse(new Point(100d).isValid());
@@ -36,7 +36,7 @@ public class PointTest {
     @Test
     public void testIsEquivalentTo() throws Exception {
         Point p = Point.decodePoint(VALID_POINT);
-        Point otherP = new Point(100d,0d,90d,90d);
+        Point otherP = getPoint();
         assertTrue(p.isEquivalentTo(otherP));
         assertTrue(otherP.isEquivalentTo(p));
         assertFalse(p.isEquivalentTo(new Point()));
@@ -48,13 +48,13 @@ public class PointTest {
 
     @Test
     public void testToJson()  throws Exception {
-        assertEquals(VALID_POINT, new Point(100d, 0d, 90d, 90d).toJson());
+        assertEquals(VALID_POINT, getPoint().toJson());
     }
 
     @Test
     public void testToJsonObject()  throws Exception {
-        JsonObject obj1 = new Point(100d, 0d, 90d, 90d).toJsonObject(null);
-        JsonObject obj2 = new Point(100d, 0d, 90d, 90d).toJsonObject(new Gson());
+        JsonObject obj1 = getPoint().toJsonObject(null);
+        JsonObject obj2 = getPoint().toJsonObject(new Gson());
         assertEquals(obj1.toString(), obj2.toString());
     }
 
@@ -132,5 +132,9 @@ public class PointTest {
         }
 
         assertTrue(gotException);
+    }
+
+    static Point getPoint() {
+        return new Point(100d,0d,90d,90d);
     }
 }

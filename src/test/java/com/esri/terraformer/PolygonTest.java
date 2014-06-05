@@ -32,7 +32,7 @@ public class PolygonTest {
         // polygon can have empty coordinates
         assertTrue(new Polygon().isValid());
 
-        // a valid multilinestirng is not necessarily a valid polygon, although the reverse is true
+        // a valid multilinestring is not necessarily a valid polygon, although the reverse is true
         assertFalse(new Polygon(MultiLineStringTest.getMultiLineString()).isValid());
         // invalid linestring
         assertFalse(new Polygon(new LineString(new Point(100d, 0d))).isValid());
@@ -223,7 +223,7 @@ public class PolygonTest {
         assertTrue(gotException);
     }
 
-    static Polygon getPolygon() throws Exception {
+    static Polygon getPolygon() {
         return new Polygon(
                 new LineString(
                         new Point(100d, 0d),
