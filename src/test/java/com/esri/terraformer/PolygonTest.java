@@ -32,9 +32,45 @@ public class PolygonTest {
         // polygon can have empty coordinates
         assertTrue(new Polygon().isValid());
 
+        // a valid multilinestirng is not necessarily a valid polygon, although the reverse is true
         assertFalse(new Polygon(MultiLineStringTest.getMultiLineString()).isValid());
+        // invalid linestring
         assertFalse(new Polygon(new LineString(new Point(100d, 0d))).isValid());
-        assertFalse(new Polygon(new LineString(new Point(100d, 0d), new Point(100d, 1d)), null).isValid());
+
+        assertFalse(new Polygon(new LineString(
+                        new Point(100d, 0d),
+                        new Point(104d, 0d),
+                        new Point(104d, 4d),
+                        new Point(100d, 4d)), // not a linear ring
+                new LineString(
+                        new Point(101d, 0.5d),
+                        new Point(103d, 0.5d),
+                        new Point(103d, 1d),
+                        new Point(101d, 1d),
+                        new Point(101d, 0.5d)),
+                new LineString(
+                        new Point(101d, 3d),
+                        new Point(103d, 3d),
+                        new Point(103d, 3.5d),
+                        new Point(101d, 3.5d),
+                        new Point(101d, 3d)
+                )).isValid());
+
+        // null linestring
+        assertFalse(new Polygon(new LineString(
+                        new Point(100d, 0d),
+                        new Point(104d, 0d),
+                        new Point(104d, 4d),
+                        new Point(100d, 4d),
+                        new Point(100d, 0d)),
+                null,
+                new LineString(
+                        new Point(101d, 3d),
+                        new Point(103d, 3d),
+                        new Point(103d, 3.5d),
+                        new Point(101d, 3.5d),
+                        new Point(101d, 3d)
+                )).isValid());
     }
 
     @Test
@@ -49,12 +85,30 @@ public class PolygonTest {
         assertTrue(otherPg.isEquivalentTo(anotherPg));
         assertTrue(anotherPg.isEquivalentTo(pg));
         assertTrue(anotherPg.isEquivalentTo(otherPg));
-        assertFalse(pg.isEquivalentTo(new LineString(
+        // rotated linear ring
+        assertTrue(pg.isEquivalentTo(new Polygon(
+                new LineString(
                         new Point(100d, 0d),
                         new Point(104d, 0d),
                         new Point(104d, 4d),
                         new Point(100d, 4d),
-                        new Point(100d, 0d))));
+                        new Point(100d, 0d)),
+                new LineString(
+                        new Point(103d, 1d),
+                        new Point(101d, 1d),
+                        new Point(101d, 0.5d),
+                        new Point(103d, 0.5d),
+                        new Point(103d, 1d)),
+                new LineString(
+                        new Point(101d, 3d),
+                        new Point(103d, 3d),
+                        new Point(103d, 3.5d),
+                        new Point(101d, 3.5d),
+                        new Point(101d, 3d)
+                )
+        )));
+
+        assertFalse(pg.isEquivalentTo(MultiLineStringTest.getMultiLineString()));
         assertFalse(pg.isEquivalentTo(new Polygon()));
         // missing 2nd hole
         assertFalse(pg.isEquivalentTo(new Polygon(new LineString(

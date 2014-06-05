@@ -30,8 +30,13 @@ public class MultiLineStringTest {
         assertTrue(new MultiLineString(getMultiLineString()).isValid());
         // multilinestring can have empty coordinates
         assertTrue(new MultiLineString().isValid());
+        // a valid polygon is a valid multilinestring, although the reverse is not necessarily true
+        assertTrue(new MultiLineString(PolygonTest.getPolygon()).isValid());
 
+        // invalid linestring
         assertFalse(new MultiLineString(new LineString(new Point(100d, 0d))).isValid());
+
+        // null linestring
         assertFalse(new MultiLineString(new LineString(new Point(100d, 0d), new Point(100d, 0d)), null).isValid());
     }
 
