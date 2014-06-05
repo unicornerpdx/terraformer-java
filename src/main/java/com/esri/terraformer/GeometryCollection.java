@@ -10,7 +10,7 @@ import java.util.Collection;
 
 // A GeometryCollection contains Geometries, and is itself a Geometry. A GeometryCollection
 // may contain other GeometryCollections.
-public class GeometryCollection extends Geometry<Geometry<?>> {
+public final class GeometryCollection extends Geometry<Geometry<?>> {
     private static final String ERROR_PREFIX = "Error while parsing GeometryCollection: ";
 
     public static final String GEOMETRIES_KEY = "geometries";
@@ -55,6 +55,24 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
     }
 
     @Override
+    protected JsonObject toJsonObject(Gson gson) {
+        JsonObject object = new JsonObject();
+        object.addProperty(TYPE_KEY, getType().toString());
+
+        JsonArray geometries = new JsonArray();
+
+        for (Geometry geo : this) {
+            if (geo != null) {
+                geometries.add(geo.toJsonObject(gson));
+            }
+        }
+
+        object.add(GEOMETRIES_KEY, geometries);
+
+        return object;
+    }
+
+    @Override
     public boolean isValid() {
         for (Geometry geo : this) {
             if (geo == null || !geo.isValid()) {
@@ -83,22 +101,6 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
         return geometryCollectionContainsOther(this, other) && geometryCollectionContainsOther(other, this);
     }
 
-    @Override
-    protected JsonObject toJsonObject(Gson gson) {
-        JsonObject object = new JsonObject();
-        object.addProperty(TYPE_KEY, getType().toString());
-
-        JsonArray geometries = new JsonArray();
-
-        for (Geometry geo : this) {
-            geometries.add(geo.toJsonObject(gson));
-        }
-
-        object.add(GEOMETRIES_KEY, geometries);
-
-        return object;
-    }
-
     public static GeometryCollection decodeGeometryCollection(String geometryCollectionJSON)
             throws TerraformerException {
         if (isEmpty(geometryCollectionJSON)) {
@@ -107,8 +109,7 @@ public class GeometryCollection extends Geometry<Geometry<?>> {
 
         JsonObject object = getObject(geometryCollectionJSON, ERROR_PREFIX);
         if (!(getType(object) == GeoJsonType.GEOMETRYCOLLECTION)) {
-            throw new TerraformerException(ERROR_PREFIX,
-                    TerraformerException.NOT_OF_TYPE + "\"GeometryCollection\"");
+            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"GeometryCollection\"");
         }
 
         return fromJsonObject(object);

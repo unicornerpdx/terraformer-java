@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 public class PolygonTest {
     static final String VALID_POLYGON = "{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]}";
     static final String VALID_DIFF_ORDER = "{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]]]}";
+    static final String EMPTY_COORDS = "{\"type\":\"Polygon\",\"coordinates\":[]}";
     static final String WRONG_TYPE = "{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]}";
     static final String NO_TYPE = "{\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]}";
     static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
@@ -28,6 +29,7 @@ public class PolygonTest {
     @Test
     public void testIsValid() throws Exception {
         assertTrue(Polygon.decodePolygon(VALID_POLYGON).isValid());
+        assertTrue(Polygon.decodePolygon(EMPTY_COORDS).isValid());
         assertTrue(new Polygon(getPolygon()).isValid());
         // polygon can have empty coordinates
         assertTrue(new Polygon().isValid());
@@ -160,6 +162,7 @@ public class PolygonTest {
     @Test
     public void testDecodePolygon() throws Exception {
         assertEquals(VALID_POLYGON, Polygon.decodePolygon(VALID_POLYGON).toJson());
+        assertEquals(EMPTY_COORDS, Polygon.decodePolygon(EMPTY_COORDS).toJson());
 
         boolean gotException = false;
 

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-public class LineString extends Geometry<Point> {
+public final class LineString extends Geometry<Point> {
     private static final String ERROR_PREFIX = "Error while parsing LineString: ";
 
     /**

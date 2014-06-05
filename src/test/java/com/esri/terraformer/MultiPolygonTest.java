@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 public class MultiPolygonTest {
     static final String VALID_MULTI_POLYGON = "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}";
     static final String VALID_DIFF_ORDER = "{\"type\":\"MultiPolygon\",\"coordinates\":[[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]],[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]]}";
+    static final String EMPTY_COORDS = "{\"type\":\"MultiPolygon\",\"coordinates\":[]}";
     static final String WRONG_TYPE = "{\"type\":\"Polygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}";
     static final String NO_TYPE = "{\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}";
     static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
@@ -28,6 +29,7 @@ public class MultiPolygonTest {
     @Test
     public void testIsValid() throws Exception {
         assertTrue(MultiPolygon.decodeMultiPolygon(VALID_MULTI_POLYGON).isValid());
+        assertTrue(MultiPolygon.decodeMultiPolygon(EMPTY_COORDS).isValid());
         assertTrue(new MultiPolygon(getMultiPolygon()).isValid());
         // multipolygon can have empty coordinates
         assertTrue(new MultiPolygon().isValid());
@@ -237,6 +239,7 @@ public class MultiPolygonTest {
     @Test
     public void testDecodeMultiPolygon() throws Exception {
         assertEquals(VALID_MULTI_POLYGON, MultiPolygon.decodeMultiPolygon(VALID_MULTI_POLYGON).toJson());
+        assertEquals(EMPTY_COORDS, MultiPolygon.decodeMultiPolygon(EMPTY_COORDS).toJson());
 
         boolean gotException = false;
 

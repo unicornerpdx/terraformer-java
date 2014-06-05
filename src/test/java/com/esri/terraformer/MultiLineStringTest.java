@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 public class MultiLineStringTest {
     static final String VALID_MULTI_LINE_STRING = "{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]}";
     static final String VALID_DIFF_ORDER = "{\"type\":\"MultiLineString\",\"coordinates\":[[[103.0,5.0],[109.0,3.0]],[[100.0,0.0],[101.0,1.0]]]}";
+    static final String EMPTY_COORDS = "{\"type\":\"MultiLineString\",\"coordinates\":[]}";
     static final String WRONG_TYPE = "{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}";
     static final String NO_TYPE = "{\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[100.0,0.0],[101.0,1.0]]]}";
     static final String NOT_AN_OBJECT = "[\"type\",\"coordinates\"]";
@@ -27,6 +28,7 @@ public class MultiLineStringTest {
     @Test
     public void testIsValid() throws Exception {
         assertTrue(MultiLineString.decodeMultiLineString(VALID_MULTI_LINE_STRING).isValid());
+        assertTrue(MultiLineString.decodeMultiLineString(EMPTY_COORDS).isValid());
         assertTrue(new MultiLineString(getMultiLineString()).isValid());
         // multilinestring can have empty coordinates
         assertTrue(new MultiLineString().isValid());
@@ -74,6 +76,7 @@ public class MultiLineStringTest {
     @Test
     public void testDecodeMultiLineString() throws Exception {
         assertEquals(VALID_MULTI_LINE_STRING, MultiLineString.decodeMultiLineString(VALID_MULTI_LINE_STRING).toJson());
+        assertEquals(EMPTY_COORDS, MultiLineString.decodeMultiLineString(EMPTY_COORDS).toJson());
 
         boolean gotException = false;
 

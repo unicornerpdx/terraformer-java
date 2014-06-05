@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class Polygon extends Geometry<LineString> {
+public final class Polygon extends Geometry<LineString> {
     private static final String ERROR_PREFIX = "Error while parsing Polygon: ";
 
     /**

@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class MultiPolygon extends Geometry<Polygon> {
+public final class MultiPolygon extends Geometry<Polygon> {
     private static final String ERROR_PREFIX = "Error while parsing MultiPolygon: ";
 
     /**
