@@ -132,7 +132,7 @@ public class MultiLineStringTest {
         assertTrue(gotException);
     }
 
-    private MultiLineString getMultiLineString() {
+     static MultiLineString getMultiLineString() {
         return new MultiLineString(new LineString(new Point(100d, 0d),
                 new Point(101d, 1d)), new LineString(new Point(103d, 5d), new Point(109d, 3d)));
     }

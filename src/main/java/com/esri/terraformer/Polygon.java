@@ -109,7 +109,13 @@ public class Polygon extends Geometry<LineString> {
 
         Polygon returnVal = new Polygon();
         for (JsonElement elem : coords) {
-            returnVal.add(LineString.fromCoordinates(elem));
+            LineString lr = LineString.fromCoordinates(elem);
+
+            if (!lr.isLinearRing()) {
+                throw new TerraformerException(ERROR_PREFIX, TerraformerException.INNER_LINESTRING_NOT_RING);
+            }
+
+            returnVal.add(lr);
         }
 
         return returnVal;

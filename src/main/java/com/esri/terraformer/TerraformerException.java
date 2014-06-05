@@ -9,6 +9,7 @@ public class TerraformerException extends Exception {
     public static final String COORDINATES_KEY_NOT_FOUND = "\"coordinates\": key not found";
     public static final String GEOMETRIES_KEY_NOT_FOUND = "\"geometries\": key not found";
     public static final String COORDINATE_ARRAY_TOO_SHORT = "coordinate array too short (< ";
+    public static final String INNER_LINESTRING_NOT_RING = "an inner line string was not a linear ring";
     public static final String ELEMENT_NOT_GEOMETRY = "element should be a Geometry, but was not";
     public static final String ELEMENT_NOT_ARRAY = "element should be a JSON Array, but was not";
     public static final String ELEMENT_NOT_OBJECT = "element should be a JSON Object, but was not";
