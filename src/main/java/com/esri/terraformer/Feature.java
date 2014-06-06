@@ -255,6 +255,11 @@ public class Feature extends GeoJson<Geometry<?>> {
         return GeoJsonType.FEATURE;
     }
 
+    /**
+     * a null geometry is represented as an empty JSON object.
+     *
+     * @return
+     */
     @Override
     public String toJson() {
         Gson gson = new Gson();

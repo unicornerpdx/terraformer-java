@@ -35,6 +35,12 @@ public final class FeatureCollection extends GeoJson<Feature> {
         return GeoJsonType.FEATURECOLLECTION;
     }
 
+    /**
+     *
+     * null features are not included in the features array
+     *
+     * @return
+     */
     @Override
     public String toJson() {
         Gson gson = new Gson();

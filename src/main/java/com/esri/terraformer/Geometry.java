@@ -22,6 +22,11 @@ public abstract class Geometry<T> extends GeoJson<T> {
         super(c);
     }
 
+    /**
+     * null objects are not included in any coordinate or geometry arrays.
+     *
+     * @return
+     */
     @Override
     public String toJson() {
         Gson gson = new Gson();
