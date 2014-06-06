@@ -95,10 +95,14 @@ public final class MultiLineString extends Geometry<LineString> {
 
     static boolean multiLineStringContainsOther(MultiLineString mls1, MultiLineString mls2) {
         for (LineString ls : mls1) {
+            if (ls == null) {
+                continue;
+            }
+
             boolean success = false;
 
             for (LineString otherLS : mls2) {
-                if (otherLS.isEquivalentTo(ls)) {
+                if (ls.isEquivalentTo(otherLS)) {
                     success = true;
                     break;
                 }

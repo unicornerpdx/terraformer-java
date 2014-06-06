@@ -45,6 +45,29 @@ public class GeometryTest {
 
     @Test
     public void testGeometryFromObjectElement() throws Exception {
-        // TODO once all the geometries are written
+        Point pt = (Point) Geometry.geometryFromObjectElement(GeoJson.getElement(PointTest.VALID_POINT, "derp"), "derp");
+        MultiLineString mls = (MultiLineString) Geometry.geometryFromObjectElement(GeoJson.getElement(MultiLineStringTest.VALID_MULTI_LINE_STRING, "derp"), "derp");
+        GeometryCollection gc = (GeometryCollection) Geometry.geometryFromObjectElement(GeoJson.getElement(GeometryCollectionTest.VALID_GEOMETRY_COLLECTION, "derp"), "derp");
+
+        boolean gotException = false;
+
+        try {
+            Polygon pg = (Polygon) Geometry.geometryFromObjectElement(GeoJson.getElement(FeatureTest.POLYGON_FEATURE, "derp"), "derp");
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_GEOMETRY));
+            gotException = true;
+        }
+
+        assertTrue(gotException);
+        gotException = false;
+
+        try {
+            GeometryCollection gc2 = (GeometryCollection) Geometry.geometryFromObjectElement(GeoJson.getElement(FeatureCollectionTest.VALID_FEATURE_COLLECTION, "derp"), "derp");
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_GEOMETRY));
+            gotException = true;
+        }
+
+        assertTrue(gotException);
     }
 }

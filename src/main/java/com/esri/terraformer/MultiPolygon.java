@@ -95,10 +95,14 @@ public final class MultiPolygon extends Geometry<Polygon> {
 
     static boolean multiPolygonContainsOther(MultiPolygon mpg1, MultiPolygon mpg2) {
         for (Polygon pg : mpg1) {
+            if (pg == null) {
+                continue;
+            }
+
             boolean success = false;
 
             for (Polygon otherPg : mpg2) {
-                if (otherPg.isEquivalentTo(pg)) {
+                if (pg.isEquivalentTo(otherPg)) {
                     success = true;
                     break;
                 }

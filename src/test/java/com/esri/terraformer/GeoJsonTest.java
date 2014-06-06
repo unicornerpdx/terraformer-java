@@ -9,9 +9,33 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 public class GeoJsonTest {
+    static final String BAD_TYPE = "{\"type\":\"WubbaLubbaDingDong\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}";
+
     @Test
     public void testDecodeJson() throws Exception {
-        // TODO once all the geometries are written
+        // we are mostly verifying that the function discovers the type successfully
+        Point pt = (Point) GeoJson.decodeJson(PointTest.VALID_POINT);
+        MultiPoint mpt = (MultiPoint) GeoJson.decodeJson(MultiPointTest.VALID_MULTIPOINT);
+        LineString ls = (LineString) GeoJson.decodeJson(LineStringTest.VALID_LINE_STRING);
+        LineString lr = (LineString) GeoJson.decodeJson(LineStringTest.LINEAR_RING);
+        MultiLineString mls = (MultiLineString) GeoJson.decodeJson(MultiLineStringTest.VALID_MULTI_LINE_STRING);
+        Polygon pg = (Polygon) GeoJson.decodeJson(PolygonTest.VALID_POLYGON);
+        MultiPolygon mpg = (MultiPolygon) GeoJson.decodeJson(MultiPolygonTest.VALID_MULTI_POLYGON);
+        GeometryCollection gc = (GeometryCollection) GeoJson.decodeJson(GeometryCollectionTest.VALID_GEOMETRY_COLLECTION);
+        Feature feat1 = (Feature) GeoJson.decodeJson(FeatureTest.MULTILINESTRING_FEATURE);
+        Feature feat2 = (Feature) GeoJson.decodeJson(FeatureTest.POLYGON_FEATURE);
+        Feature feat3 = (Feature) GeoJson.decodeJson(FeatureTest.MULTIPOLYGON_FEATURE);
+        Feature feat4 = (Feature) GeoJson.decodeJson(FeatureTest.GEOMETRYCOLLECTION_FEATURE);
+        FeatureCollection fc = (FeatureCollection) GeoJson.decodeJson(FeatureCollectionTest.VALID_FEATURE_COLLECTION);
+
+        boolean gotException = false;
+        try {
+            GeoJson<?> gj = GeoJson.decodeJson(BAD_TYPE);
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_UNKNOWN_TYPE));
+            gotException = true;
+        }
+        assertTrue(gotException);
     }
 
     @Test
@@ -142,10 +166,5 @@ public class GeoJsonTest {
         assertEquals(true, GeoJson.isEmpty(null));
         assertEquals(true, GeoJson.isEmpty(""));
         assertEquals(false, GeoJson.isEmpty("derp"));
-    }
-
-    @Test
-    public void testGeoJsonFromObjectElement() throws Exception {
-        // TODO once all the geometries are written
     }
 }

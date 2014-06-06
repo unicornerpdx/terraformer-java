@@ -368,4 +368,21 @@ public class Feature extends GeoJson<Geometry<?>> {
 
         return returnVal;
     }
+
+    /**
+     * Package private.
+     *
+     * @param featureElem
+     * @param errorPrefix
+     * @return
+     * @throws TerraformerException
+     */
+    static Feature featureFromObjectElement(JsonElement featureElem, String errorPrefix) throws TerraformerException {
+        GeoJson<?> geoJson = geoJsonFromObjectElement(featureElem, errorPrefix);
+        if (!(geoJson instanceof Feature)) {
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_FEATURE);
+        }
+
+        return (Feature) geoJson;
+    }
 }

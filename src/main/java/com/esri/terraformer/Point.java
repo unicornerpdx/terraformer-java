@@ -45,7 +45,7 @@ public final class Point extends Geometry<Double> {
 
     @Override
     public boolean isEquivalentTo(GeoJson<?> obj) {
-        return obj.getClass() == Point.class && equals(obj);
+        return obj != null && obj.getClass() == Point.class && equals(obj);
     }
 
     public static Point decodePoint(String pointJSON) throws TerraformerException {

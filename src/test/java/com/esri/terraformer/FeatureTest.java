@@ -408,4 +408,33 @@ public class FeatureTest {
         props.add("horse", new JsonPrimitive("hands"));
         return props;
     }
+
+    @Test
+    public void testFeatureFromObjectElement() throws Exception {
+        Feature ft1 = Feature.featureFromObjectElement(GeoJson.getElement(MULTILINESTRING_FEATURE, "derp"), "derp");
+        Feature ft2 = Feature.featureFromObjectElement(GeoJson.getElement(POLYGON_FEATURE, "derp"), "derp");
+        Feature ft3 = Feature.featureFromObjectElement(GeoJson.getElement(MULTIPOLYGON_FEATURE, "derp"), "derp");
+        Feature ft4 = Feature.featureFromObjectElement(GeoJson.getElement(GEOMETRYCOLLECTION_FEATURE, "derp"), "derp");
+
+        boolean gotException = false;
+
+        try {
+            Feature ft5 = Feature.featureFromObjectElement(GeoJson.getElement(MultiPolygonTest.VALID_MULTI_POLYGON, "derp"), "derp");
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_FEATURE));
+            gotException = true;
+        }
+
+        assertTrue(gotException);
+        gotException = false;
+
+        try {
+            Feature ft6 = Feature.featureFromObjectElement(GeoJson.getElement(GeometryCollectionTest.VALID_GEOMETRY_COLLECTION, "derp"), "derp");
+        } catch (TerraformerException e) {
+            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_FEATURE));
+            gotException = true;
+        }
+
+        assertTrue(gotException);
+    }
 }

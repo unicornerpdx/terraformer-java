@@ -135,10 +135,14 @@ public final class GeometryCollection extends Geometry<Geometry<?>> {
 
     static boolean geometryCollectionContainsOther(GeometryCollection gc1, GeometryCollection gc2) {
         for (Geometry<?> geo : gc1) {
+            if (geo == null) {
+                continue;
+            }
+
             boolean success = false;
 
             for (Geometry<?> otherGeo : gc2) {
-                if (otherGeo.isEquivalentTo(geo)) {
+                if (geo.isEquivalentTo(otherGeo)) {
                     success = true;
                     break;
                 }

@@ -124,12 +124,16 @@ public final class Polygon extends Geometry<LineString> {
     static boolean polygonContainsOther(Polygon pg1, Polygon pg2) {
         // only compare polygon holes (index > 0)
         for (int i = 1; i < pg1.size(); i++) {
-            boolean success = false;
             LineString ls = pg1.get(i);
+            if (ls == null) {
+                continue;
+            }
+
+            boolean success = false;
 
             for (int j = 1; j < pg2.size(); j++) {
                 LineString otherLS = pg2.get(j);
-                if (otherLS.isEquivalentTo(ls)) {
+                if (ls.isEquivalentTo(otherLS)) {
                     success = true;
                     break;
                 }
