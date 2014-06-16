@@ -20,8 +20,8 @@ public class PointTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.POINT, Point.decodePoint(VALID_POINT).getType());
-        assertEquals(GeoJsonType.POINT, new Point().getType());
+        assertEquals(GeometryType.POINT, Point.decodePoint(VALID_POINT).getType());
+        assertEquals(GeometryType.POINT, new Point().getType());
     }
 
     @Test

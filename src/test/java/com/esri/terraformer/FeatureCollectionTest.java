@@ -22,8 +22,8 @@ public class FeatureCollectionTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.FEATURECOLLECTION, getFeatureCollection().getType());
-        assertEquals(GeoJsonType.FEATURECOLLECTION, new FeatureCollection().getType());
+        assertEquals(GeometryType.FEATURECOLLECTION, getFeatureCollection().getType());
+        assertEquals(GeometryType.FEATURECOLLECTION, new FeatureCollection().getType());
     }
 
     @Test

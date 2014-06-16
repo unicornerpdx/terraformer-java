@@ -32,8 +32,8 @@ public final class LineString extends Geometry<Point> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.LINESTRING;
+    public GeometryType getType() {
+        return GeometryType.LINESTRING;
     }
 
     @Override
@@ -48,7 +48,7 @@ public final class LineString extends Geometry<Point> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -86,7 +86,7 @@ public final class LineString extends Geometry<Point> {
         }
 
         JsonObject object = getObject(lineStringJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.LINESTRING)) {
+        if (!(getType(object) == GeometryType.LINESTRING)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"LineString\"");
         }
 

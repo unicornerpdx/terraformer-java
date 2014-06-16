@@ -157,11 +157,11 @@ public class FeatureTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.FEATURE, getMultiLineStringFeature().getType());
-        assertEquals(GeoJsonType.FEATURE, getPolygonFeature().getType());
-        assertEquals(GeoJsonType.FEATURE, getMultiPolygonFeature().getType());
-        assertEquals(GeoJsonType.FEATURE, getGeometryCollectionFeature().getType());
-        assertEquals(GeoJsonType.FEATURE, new Feature().getType());
+        assertEquals(GeometryType.FEATURE, getMultiLineStringFeature().getType());
+        assertEquals(GeometryType.FEATURE, getPolygonFeature().getType());
+        assertEquals(GeometryType.FEATURE, getMultiPolygonFeature().getType());
+        assertEquals(GeometryType.FEATURE, getGeometryCollectionFeature().getType());
+        assertEquals(GeometryType.FEATURE, new Feature().getType());
     }
 
     @Test
@@ -411,15 +411,16 @@ public class FeatureTest {
 
     @Test
     public void testFeatureFromObjectElement() throws Exception {
-        Feature ft1 = Feature.featureFromObjectElement(GeoJson.getElement(MULTILINESTRING_FEATURE, "derp"), "derp");
-        Feature ft2 = Feature.featureFromObjectElement(GeoJson.getElement(POLYGON_FEATURE, "derp"), "derp");
-        Feature ft3 = Feature.featureFromObjectElement(GeoJson.getElement(MULTIPOLYGON_FEATURE, "derp"), "derp");
-        Feature ft4 = Feature.featureFromObjectElement(GeoJson.getElement(GEOMETRYCOLLECTION_FEATURE, "derp"), "derp");
+        Feature ft1 = Feature.featureFromObjectElement(BaseGeometry.getElement(MULTILINESTRING_FEATURE, "derp"), "derp");
+        Feature ft2 = Feature.featureFromObjectElement(BaseGeometry.getElement(POLYGON_FEATURE, "derp"), "derp");
+        Feature ft3 = Feature.featureFromObjectElement(BaseGeometry.getElement(MULTIPOLYGON_FEATURE, "derp"), "derp");
+        Feature ft4 = Feature.featureFromObjectElement(BaseGeometry.getElement(GEOMETRYCOLLECTION_FEATURE, "derp"), "derp");
 
         boolean gotException = false;
 
         try {
-            Feature ft5 = Feature.featureFromObjectElement(GeoJson.getElement(MultiPolygonTest.VALID_MULTI_POLYGON, "derp"), "derp");
+            Feature ft5 = Feature.featureFromObjectElement(
+                    BaseGeometry.getElement(MultiPolygonTest.VALID_MULTI_POLYGON, "derp"), "derp");
         } catch (TerraformerException e) {
             assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_FEATURE));
             gotException = true;
@@ -429,7 +430,8 @@ public class FeatureTest {
         gotException = false;
 
         try {
-            Feature ft6 = Feature.featureFromObjectElement(GeoJson.getElement(GeometryCollectionTest.VALID_GEOMETRY_COLLECTION, "derp"), "derp");
+            Feature ft6 = Feature.featureFromObjectElement(
+                    BaseGeometry.getElement(GeometryCollectionTest.VALID_GEOMETRY_COLLECTION, "derp"), "derp");
         } catch (TerraformerException e) {
             assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_FEATURE));
             gotException = true;

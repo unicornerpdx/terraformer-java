@@ -28,8 +28,8 @@ public final class MultiPolygon extends Geometry<Polygon> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.MULTIPOLYGON;
+    public GeometryType getType() {
+        return GeometryType.MULTIPOLYGON;
     }
 
     @Override
@@ -44,7 +44,7 @@ public final class MultiPolygon extends Geometry<Polygon> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -67,7 +67,7 @@ public final class MultiPolygon extends Geometry<Polygon> {
         }
 
         JsonObject object = getObject(multiPolygonJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.MULTIPOLYGON)) {
+        if (!(getType(object) == GeometryType.MULTIPOLYGON)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPolygon\"");
         }
 

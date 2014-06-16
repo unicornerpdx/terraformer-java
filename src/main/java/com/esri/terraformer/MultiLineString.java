@@ -28,8 +28,8 @@ public final class MultiLineString extends Geometry<LineString> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.MULTILINESTRING;
+    public GeometryType getType() {
+        return GeometryType.MULTILINESTRING;
     }
 
     @Override
@@ -44,7 +44,7 @@ public final class MultiLineString extends Geometry<LineString> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -67,7 +67,7 @@ public final class MultiLineString extends Geometry<LineString> {
         }
 
         JsonObject object = getObject(multiLineStringJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.MULTILINESTRING)) {
+        if (!(getType(object) == GeometryType.MULTILINESTRING)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiLineString\"");
         }
 

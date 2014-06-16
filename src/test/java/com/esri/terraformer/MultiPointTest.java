@@ -21,8 +21,8 @@ public class MultiPointTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.MULTIPOINT, MultiPoint.decodeMultiPoint(VALID_MULTIPOINT).getType());
-        assertEquals(GeoJsonType.MULTIPOINT, new MultiPoint().getType());
+        assertEquals(GeometryType.MULTIPOINT, MultiPoint.decodeMultiPoint(VALID_MULTIPOINT).getType());
+        assertEquals(GeometryType.MULTIPOINT, new MultiPoint().getType());
     }
 
     @Test

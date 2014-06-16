@@ -44,8 +44,8 @@ public final class GeometryCollection extends Geometry<Geometry<?>> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.GEOMETRYCOLLECTION;
+    public GeometryType getType() {
+        return GeometryType.GEOMETRYCOLLECTION;
     }
 
     @Override
@@ -84,7 +84,7 @@ public final class GeometryCollection extends Geometry<Geometry<?>> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -108,7 +108,7 @@ public final class GeometryCollection extends Geometry<Geometry<?>> {
         }
 
         JsonObject object = getObject(geometryCollectionJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.GEOMETRYCOLLECTION)) {
+        if (!(getType(object) == GeometryType.GEOMETRYCOLLECTION)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"GeometryCollection\"");
         }
 

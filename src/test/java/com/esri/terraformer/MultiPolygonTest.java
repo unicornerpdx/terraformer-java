@@ -22,8 +22,8 @@ public class MultiPolygonTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.MULTIPOLYGON, getMultiPolygon().getType());
-        assertEquals(GeoJsonType.MULTIPOLYGON, new MultiPolygon().getType());
+        assertEquals(GeometryType.MULTIPOLYGON, getMultiPolygon().getType());
+        assertEquals(GeometryType.MULTIPOLYGON, new MultiPolygon().getType());
     }
 
     @Test

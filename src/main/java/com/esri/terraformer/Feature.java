@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Feature contains a single Geometry, and this is enforced during editing.
  */
-public class Feature extends GeoJson<Geometry<?>> {
+public class Feature extends BaseGeometry<Geometry<?>> {
     private static final String ERROR_PREFIX = "Error while parsing Feature: ";
 
     public static final String GEOMETRY_KEY = "geometry";
@@ -82,7 +82,6 @@ public class Feature extends GeoJson<Geometry<?>> {
     /**
      * returns the {@link Geometry} (if existing) associated with this Feature, or null.
      *
-     * @param i
      * @return may be null if the Feature has no geometry
      */
     public Geometry<?> get() {
@@ -124,7 +123,6 @@ public class Feature extends GeoJson<Geometry<?>> {
     /**
      * replaces the {@link Geometry} (if existing) associated with this Feature.
      *
-     * @param i
      * @param geometry
      * @return may be null if the Feature had no geometry previously
      */
@@ -195,7 +193,6 @@ public class Feature extends GeoJson<Geometry<?>> {
     /**
      * removes the {@link Geometry} (if existing) associated with this Feature.
      *
-     * @param i
      * @return the geometry that was removed, or null
      */
     public Geometry<?> remove() {
@@ -251,8 +248,8 @@ public class Feature extends GeoJson<Geometry<?>> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.FEATURE;
+    public GeometryType getType() {
+        return GeometryType.FEATURE;
     }
 
     /**
@@ -302,7 +299,7 @@ public class Feature extends GeoJson<Geometry<?>> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -329,7 +326,7 @@ public class Feature extends GeoJson<Geometry<?>> {
         }
 
         JsonObject object = getObject(featureJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.FEATURE)) {
+        if (!(getType(object) == GeometryType.FEATURE)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Feature\"");
         }
 
@@ -383,7 +380,7 @@ public class Feature extends GeoJson<Geometry<?>> {
      * @throws TerraformerException
      */
     static Feature featureFromObjectElement(JsonElement featureElem, String errorPrefix) throws TerraformerException {
-        GeoJson<?> geoJson = geoJsonFromObjectElement(featureElem, errorPrefix);
+        BaseGeometry<?> geoJson = geoJsonFromObjectElement(featureElem, errorPrefix);
         if (!(geoJson instanceof Feature)) {
             throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_FEATURE);
         }
