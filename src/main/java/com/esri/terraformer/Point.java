@@ -1,9 +1,5 @@
 package com.esri.terraformer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -46,55 +42,5 @@ public final class Point extends Geometry<Double> {
     @Override
     public boolean isEquivalentTo(BaseGeometry<?> obj) {
         return obj != null && obj.getClass() == Point.class && equals(obj);
-    }
-
-    public static Point decodePoint(String pointJSON) throws TerraformerException {
-        if (isEmpty(pointJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(pointJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.POINT)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    /**
-     * Package private.
-     *
-     * @param object
-     * @return
-     * @throws TerraformerException
-     */
-    static Point fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        return fromCoordinates(getCoordinates(object, ERROR_PREFIX));
-    }
-
-    /**
-     * Package private.
-     *
-     * @param coordsElem
-     * @return
-     * @throws TerraformerException
-     */
-    static Point fromCoordinates(JsonElement coordsElem) throws TerraformerException {
-        JsonArray coords = getCoordinateArray(coordsElem, 2, ERROR_PREFIX);
-
-        Point returnVal = new Point();
-        for (JsonElement elem : coords) {
-            Double coord;
-            try {
-                coord = elem.getAsDouble();
-            } catch (RuntimeException e) {
-                throw new TerraformerException(ERROR_PREFIX, TerraformerException.COORDINATE_NOT_NUMERIC + elem);
-            }
-
-            returnVal.add(coord);
-        }
-
-        return returnVal;
     }
 }

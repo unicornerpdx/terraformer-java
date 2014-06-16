@@ -1,9 +1,5 @@
 package com.esri.terraformer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -52,37 +48,5 @@ public final class MultiPoint extends Geometry<Point> {
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
         return obj.containsAll(this) && containsAll(obj);
-    }
-
-    public static MultiPoint decodeMultiPoint(String multiPointJSON) throws TerraformerException {
-        if (isEmpty(multiPointJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(multiPointJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.MULTIPOINT)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    /**
-     * Package private.
-     *
-     * @param object
-     * @return
-     * @throws TerraformerException
-     */
-    static MultiPoint fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        JsonArray coords = getCoordinateArray(getCoordinates(object, ERROR_PREFIX), 2, ERROR_PREFIX);
-
-        MultiPoint returnVal = new MultiPoint();
-        for (JsonElement elem : coords) {
-            returnVal.add(Point.fromCoordinates(elem));
-        }
-
-        return returnVal;
     }
 }

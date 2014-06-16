@@ -1,9 +1,5 @@
 package com.esri.terraformer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -59,38 +55,6 @@ public final class MultiLineString extends Geometry<LineString> {
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
         return multiLineStringContainsOther(this, other) && multiLineStringContainsOther(other, this);
-    }
-
-    public static MultiLineString decodeMultiLineString(String multiLineStringJSON) throws TerraformerException {
-        if (isEmpty(multiLineStringJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(multiLineStringJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.MULTILINESTRING)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiLineString\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    /**
-     * Package private.
-     *
-     * @param object
-     * @return
-     * @throws TerraformerException
-     */
-    static MultiLineString fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        JsonArray coords = getCoordinateArray(getCoordinates(object, ERROR_PREFIX), 0, ERROR_PREFIX);
-
-        MultiLineString returnVal = new MultiLineString();
-        for (JsonElement elem : coords) {
-            returnVal.add(LineString.fromCoordinates(elem));
-        }
-
-        return returnVal;
     }
 
     static boolean multiLineStringContainsOther(MultiLineString mls1, MultiLineString mls2) {

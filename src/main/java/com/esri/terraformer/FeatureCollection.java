@@ -1,17 +1,10 @@
 package com.esri.terraformer;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.Arrays;
 import java.util.Collection;
 
 public final class FeatureCollection extends BaseGeometry<Feature> {
     static final String ERROR_PREFIX = "Error while parsing FeatureCollection: ";
-
-    public static final String FEATURES_KEY = "features";
 
     /**
      * A valid FeatureCollection contains 0 or more non-null {@link Feature}'s.
@@ -42,27 +35,8 @@ public final class FeatureCollection extends BaseGeometry<Feature> {
      * @return
      */
     @Override
-    public String toJson() {
-        Gson gson = new Gson();
-        return gson.toJson(toJsonObject(gson));
-    }
-
-    @Override
-    protected JsonObject toJsonObject(Gson gson) {
-        JsonObject object = new JsonObject();
-        object.addProperty(TYPE_KEY, getType().toString());
-
-        JsonArray features = new JsonArray();
-
-        for (Feature feat : this) {
-            if (feat != null) {
-                features.add(feat.toJsonObject(gson));
-            }
-        }
-
-        object.add(FEATURES_KEY, features);
-
-        return object;
+    public Object encode() {
+        return Terraformer.serializer.serialize(this);
     }
 
     @Override
