@@ -11,7 +11,7 @@ import java.util.Collection;
 // A GeometryCollection contains Geometries, and is itself a Geometry. A GeometryCollection
 // may contain other GeometryCollections.
 public final class GeometryCollection extends Geometry<Geometry<?>> {
-    private static final String ERROR_PREFIX = "Error while parsing GeometryCollection: ";
+    static final String ERROR_PREFIX = "Error while parsing GeometryCollection: ";
 
     public static final String GEOMETRIES_KEY = "geometries";
 

@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class Polygon extends Geometry<LineString> {
-    private static final String ERROR_PREFIX = "Error while parsing Polygon: ";
+    static final String ERROR_PREFIX = "Error while parsing Polygon: ";
 
     /**
      * A valid Polygon contains 0 or more non-null {@link LineString}'s, each of which

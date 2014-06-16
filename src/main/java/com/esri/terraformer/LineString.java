@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public final class LineString extends Geometry<Point> {
-    private static final String ERROR_PREFIX = "Error while parsing LineString: ";
+    static final String ERROR_PREFIX = "Error while parsing LineString: ";
 
     /**
      * A valid LineString contains 2 or more non-null {@link Point}'s.

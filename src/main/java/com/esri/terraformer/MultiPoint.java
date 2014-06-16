@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class MultiPoint extends Geometry<Point> {
-    private static final String ERROR_PREFIX = "Error while parsing MultiPoint: ";
+    static final String ERROR_PREFIX = "Error while parsing MultiPoint: ";
 
     /**
      * A valid MultiPoint contains 2 or more non-null {@link Point}'s.

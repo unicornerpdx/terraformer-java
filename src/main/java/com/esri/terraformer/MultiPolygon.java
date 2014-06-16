@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class MultiPolygon extends Geometry<Polygon> {
-    private static final String ERROR_PREFIX = "Error while parsing MultiPolygon: ";
+    static final String ERROR_PREFIX = "Error while parsing MultiPolygon: ";
 
     /**
      * A valid MultiPolygon contains 0 or more non-null {@link Polygon}'s.

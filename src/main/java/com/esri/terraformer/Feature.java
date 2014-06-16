@@ -11,7 +11,7 @@ import java.util.List;
  * Feature contains a single Geometry, and this is enforced during editing.
  */
 public class Feature extends BaseGeometry<Geometry<?>> {
-    private static final String ERROR_PREFIX = "Error while parsing Feature: ";
+    static final String ERROR_PREFIX = "Error while parsing Feature: ";
 
     public static final String GEOMETRY_KEY = "geometry";
     public static final String PROPERTIES_KEY = "properties";

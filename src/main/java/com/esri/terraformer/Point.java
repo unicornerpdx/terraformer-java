@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class Point extends Geometry<Double> {
-    private static final String ERROR_PREFIX = "Error while parsing Point: ";
+    static final String ERROR_PREFIX = "Error while parsing Point: ";
 
     /**
      * A Valid Point contains 2 or more non-null {@link Double}'s.

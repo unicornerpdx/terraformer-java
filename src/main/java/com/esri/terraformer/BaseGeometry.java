@@ -226,16 +226,6 @@ public abstract class BaseGeometry<T> extends ArrayList<T> {
         return foundType;
     }
 
-    /**
-     * Package private.
-     *
-     * @param json
-     * @return
-     */
-    static boolean isEmpty(String json) {
-        return json == null || json.length() <= 0;
-    }
-
     static BaseGeometry<?> geoJsonFromObjectElement(JsonElement gjElem, String errorPrefix) throws TerraformerException {
         JsonObject gjObject = objectFromElement(gjElem, errorPrefix);
 

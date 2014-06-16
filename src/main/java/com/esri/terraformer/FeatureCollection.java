@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class FeatureCollection extends BaseGeometry<Feature> {
-    private static final String ERROR_PREFIX = "Error while parsing FeatureCollection: ";
+    static final String ERROR_PREFIX = "Error while parsing FeatureCollection: ";
 
     public static final String FEATURES_KEY = "features";
 
@@ -92,38 +92,6 @@ public final class FeatureCollection extends BaseGeometry<Feature> {
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
         return featureCollectionContainsOther(this, other) && featureCollectionContainsOther(other, this);
-    }
-
-    public static FeatureCollection decodeFeatureCollection(String featureCollectionJSON)
-            throws TerraformerException {
-        if (isEmpty(featureCollectionJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(featureCollectionJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.FEATURECOLLECTION)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"FeatureCollection\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    static FeatureCollection fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        JsonElement featuresElem = object.get(FEATURES_KEY);
-
-        if (featuresElem == null) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.FEATURES_KEY_NOT_FOUND);
-        }
-
-        JsonArray features = arrayFromElement(featuresElem, ERROR_PREFIX);
-
-        FeatureCollection returnVal = new FeatureCollection();
-        for (JsonElement elem : features) {
-            returnVal.add(Feature.featureFromObjectElement(elem, ERROR_PREFIX));
-        }
-
-        return returnVal;
     }
 
     static boolean featureCollectionContainsOther(FeatureCollection fc1, FeatureCollection fc2) {

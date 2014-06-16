@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public final class MultiLineString extends Geometry<LineString> {
-    private static final String ERROR_PREFIX = "Error while parsing MultiLineString: ";
+    static final String ERROR_PREFIX = "Error while parsing MultiLineString: ";
 
     /**
      * A valid MultiLineString contains 0 or more non-null {@link LineString}'s.
