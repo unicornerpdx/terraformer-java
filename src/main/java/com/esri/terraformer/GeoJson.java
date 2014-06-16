@@ -41,7 +41,7 @@ public class GeoJson implements Terraformer.Serializer, Terraformer.Deserializer
             case MULTILINESTRING:
             case POLYGON:
             case MULTIPOLYGON:
-                obj = geometryToJsonObject((MultiPolygon)geo);
+                obj = geometryToJsonObject((Geometry)geo);
                 break;
             case GEOMETRYCOLLECTION:
                 obj = geometryCollectionToJsonObject((GeometryCollection)geo);
