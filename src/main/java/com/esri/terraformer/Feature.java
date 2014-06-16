@@ -1,7 +1,5 @@
 package com.esri.terraformer;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.Collection;
@@ -11,10 +9,7 @@ import java.util.List;
  * Feature contains a single Geometry, and this is enforced during editing.
  */
 public class Feature extends BaseGeometry<Geometry<?>> {
-    private static final String ERROR_PREFIX = "Error while parsing Feature: ";
-
-    public static final String GEOMETRY_KEY = "geometry";
-    public static final String PROPERTIES_KEY = "properties";
+    static final String ERROR_PREFIX = "Error while parsing Feature: ";
 
     private JsonObject mProperties;
 
@@ -252,40 +247,6 @@ public class Feature extends BaseGeometry<Geometry<?>> {
         return GeometryType.FEATURE;
     }
 
-    /**
-     * a null geometry is represented as an empty JSON object.
-     *
-     * @return
-     */
-    @Override
-    public String toJson() {
-        Gson gson = new Gson();
-        return gson.toJson(toJsonObject(gson));
-    }
-
-    @Override
-    protected JsonObject toJsonObject(Gson gson) {
-        if (gson == null) {
-            gson = new Gson();
-        }
-
-        JsonObject object = new JsonObject();
-        object.addProperty(TYPE_KEY, getType().toString());
-
-        JsonObject geometry = new JsonObject();
-        Geometry<?> geomObj = get(0);
-        if (geomObj != null) {
-            geometry = geomObj.toJsonObject(gson);
-        }
-        object.add(GEOMETRY_KEY, geometry);
-
-        if (mProperties != null) {
-            object.add(PROPERTIES_KEY, mProperties);
-        }
-
-        return object;
-    }
-
     @Override
     public boolean isValid() {
         if (size() > 0) {
@@ -318,73 +279,5 @@ public class Feature extends BaseGeometry<Geometry<?>> {
         }
 
         return geo.isEquivalentTo(other.get(0));
-    }
-
-    public static Feature decodeFeature(String featureJSON) throws TerraformerException {
-        if (isEmpty(featureJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(featureJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.FEATURE)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Feature\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    static Feature fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        JsonElement geomElement = object.get(GEOMETRY_KEY);
-
-        if (geomElement == null) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.GEOMETRY_KEY_NOT_FOUND);
-        }
-
-        JsonElement propsElem = object.get(PROPERTIES_KEY);
-        JsonObject propsObj = null;
-
-        if (propsElem != null) {
-            try {
-                propsObj = propsElem.getAsJsonObject();
-            } catch (RuntimeException e) {
-                throw new TerraformerException(ERROR_PREFIX, TerraformerException.PROPERTIES_NOT_OBJECT);
-            }
-        }
-
-        JsonObject tempObj;
-        try {
-            tempObj = geomElement.getAsJsonObject();
-        } catch (RuntimeException e) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.ELEMENT_NOT_OBJECT);
-        }
-
-        Feature returnVal = new Feature();
-        if (tempObj.entrySet().size() > 0) {
-            returnVal.add(Geometry.geometryFromObjectElement(geomElement, ERROR_PREFIX));
-        }
-
-        if (propsObj != null) {
-            returnVal.setProperties(propsObj);
-        }
-
-        return returnVal;
-    }
-
-    /**
-     * Package private.
-     *
-     * @param featureElem
-     * @param errorPrefix
-     * @return
-     * @throws TerraformerException
-     */
-    static Feature featureFromObjectElement(JsonElement featureElem, String errorPrefix) throws TerraformerException {
-        BaseGeometry<?> geoJson = geoJsonFromObjectElement(featureElem, errorPrefix);
-        if (!(geoJson instanceof Feature)) {
-            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_FEATURE);
-        }
-
-        return (Feature) geoJson;
     }
 }

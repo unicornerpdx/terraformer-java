@@ -1,15 +1,11 @@
 package com.esri.terraformer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 public final class LineString extends Geometry<Point> {
-    private static final String ERROR_PREFIX = "Error while parsing LineString: ";
+    static final String ERROR_PREFIX = "Error while parsing LineString: ";
 
     /**
      * A valid LineString contains 2 or more non-null {@link Point}'s.
@@ -78,49 +74,6 @@ public final class LineString extends Geometry<Point> {
 
     public boolean isLinearRing() {
         return size() > 3 && get(0).equals(get(size() -1));
-    }
-
-    public static LineString decodeLineString(String lineStringJSON) throws TerraformerException {
-        if (isEmpty(lineStringJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(lineStringJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.LINESTRING)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"LineString\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    /**
-     * Package private.
-     *
-     * @param object
-     * @return
-     * @throws TerraformerException
-     */
-    static LineString fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        return fromCoordinates(getCoordinates(object, ERROR_PREFIX));
-    }
-
-    /**
-     * Package private.
-     *
-     * @param coordsElem
-     * @return
-     * @throws TerraformerException
-     */
-    static LineString fromCoordinates(JsonElement coordsElem) throws TerraformerException {
-        JsonArray coords = getCoordinateArray(coordsElem, 2, ERROR_PREFIX);
-
-        LineString returnVal = new LineString();
-        for (JsonElement elem : coords) {
-            returnVal.add(Point.fromCoordinates(elem));
-        }
-
-        return returnVal;
     }
 
     /**

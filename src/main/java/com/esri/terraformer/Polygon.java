@@ -1,14 +1,10 @@
 package com.esri.terraformer;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.util.Arrays;
 import java.util.Collection;
 
 public final class Polygon extends Geometry<LineString> {
-    private static final String ERROR_PREFIX = "Error while parsing Polygon: ";
+    static final String ERROR_PREFIX = "Error while parsing Polygon: ";
 
     /**
      * A valid Polygon contains 0 or more non-null {@link LineString}'s, each of which
@@ -70,55 +66,6 @@ public final class Polygon extends Geometry<LineString> {
 
         // gotta do contains in both directions to account for duplicates that exist only on one side.
         return polygonContainsOther(this, other) && polygonContainsOther(other, this);
-    }
-
-    public static Polygon decodePolygon(String polygonJSON) throws TerraformerException {
-        if (isEmpty(polygonJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        JsonObject object = getObject(polygonJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeometryType.POLYGON)) {
-            throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Polygon\"");
-        }
-
-        return fromJsonObject(object);
-    }
-
-    /**
-     * Package private.
-     *
-     * @param object
-     * @return
-     * @throws TerraformerException
-     */
-    static Polygon fromJsonObject(JsonObject object) throws TerraformerException {
-        // assume the type has already been checked
-        return fromCoordinates(getCoordinates(object, ERROR_PREFIX));
-    }
-
-    /**
-     * Package private.
-     *
-     * @param coordsElem
-     * @return
-     * @throws TerraformerException
-     */
-    static Polygon fromCoordinates(JsonElement coordsElem) throws TerraformerException {
-        JsonArray coords = getCoordinateArray(coordsElem, 0, ERROR_PREFIX);
-
-        Polygon returnVal = new Polygon();
-        for (JsonElement elem : coords) {
-            LineString lr = LineString.fromCoordinates(elem);
-
-            if (!lr.isLinearRing()) {
-                throw new TerraformerException(ERROR_PREFIX, TerraformerException.INNER_LINESTRING_NOT_RING);
-            }
-
-            returnVal.add(lr);
-        }
-
-        return returnVal;
     }
 
     static boolean polygonContainsOther(Polygon pg1, Polygon pg2) {
