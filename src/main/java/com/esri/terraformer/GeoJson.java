@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class GeoJson implements Terraformer.Serializer, Terraformer.Deserializer {
+public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
     public static final String GEOJSON_ERROR_PREFIX = "Error while parsing GeoJson: ";
     public static final String TYPE_KEY = "type";
     public static final String COORDINATES_KEY = "coordinates";
