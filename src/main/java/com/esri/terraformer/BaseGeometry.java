@@ -22,13 +22,6 @@ public abstract class BaseGeometry<T> extends ArrayList<T> {
     public abstract GeometryType getType();
 
     /**
-     * returns the representation as determined by the current serializer set on the {@link Terraformer} class.
-     *
-     * @return
-     */
-    public abstract Object encode();
-
-    /**
      * Let's you know whether your object is up to BaseGeometry spec.
      *
      * When inflating an object from a JSON String, you'll get an exception if the String
@@ -49,6 +42,15 @@ public abstract class BaseGeometry<T> extends ArrayList<T> {
      * @return
      */
     public abstract boolean isEquivalentTo(BaseGeometry<?> obj);
+
+    /**
+     * returns the String representation as determined by the current serializer set on the {@link Terraformer} class.
+     *
+     * @return
+     */
+    public String encode() {
+        return Terraformer.serializer.serialize(this);
+    }
 
     /**
      * Package private.

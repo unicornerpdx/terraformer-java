@@ -42,11 +42,6 @@ public final class GeometryCollection extends Geometry<Geometry<?>> {
     }
 
     @Override
-    public Object encode() {
-        return Terraformer.serializer.serialize(this);
-    }
-
-    @Override
     public boolean isValid() {
         for (Geometry geo : this) {
             if (geo == null || !geo.isValid()) {

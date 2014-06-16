@@ -247,16 +247,6 @@ public class Feature extends BaseGeometry<Geometry<?>> {
         return GeometryType.FEATURE;
     }
 
-    /**
-     * a null geometry is represented as an empty JSON object.
-     *
-     * @return
-     */
-    @Override
-    public Object encode() {
-        return Terraformer.serializer.serialize(this);
-    }
-
     @Override
     public boolean isValid() {
         if (size() > 0) {

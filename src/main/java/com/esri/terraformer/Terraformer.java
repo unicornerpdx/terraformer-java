@@ -6,15 +6,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public final class Terraformer {
-    public static Serializer<?> serializer;
-    public static Deserializer<?> deserializer;
+    public static Serializer serializer;
+    public static Deserializer deserializer;
 
-    public interface Deserializer<T> {
-        public BaseGeometry deserialize(T t) throws TerraformerException;
+    public interface Deserializer {
+        public BaseGeometry deserialize(String in) throws TerraformerException;
     }
 
-    public interface Serializer<T> {
-        public T serialize(BaseGeometry geo);
+    public interface Serializer {
+        public String serialize(BaseGeometry geo);
     }
 
     /**

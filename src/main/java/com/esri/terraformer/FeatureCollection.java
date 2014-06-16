@@ -28,17 +28,6 @@ public final class FeatureCollection extends BaseGeometry<Feature> {
         return GeometryType.FEATURECOLLECTION;
     }
 
-    /**
-     *
-     * null features are not included in the features array
-     *
-     * @return
-     */
-    @Override
-    public Object encode() {
-        return Terraformer.serializer.serialize(this);
-    }
-
     @Override
     public boolean isValid() {
         for (Feature feat : this) {

@@ -14,14 +14,4 @@ public abstract class Geometry<T> extends BaseGeometry<T> {
     protected Geometry(Collection<T> c) {
         super(c);
     }
-
-    /**
-     * null objects are not included in any coordinate or geometry arrays.
-     *
-     * @return
-     */
-    @Override
-    public Object encode() {
-        return Terraformer.serializer.serialize(this);
-    }
 }

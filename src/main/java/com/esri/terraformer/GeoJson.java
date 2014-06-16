@@ -5,7 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class GeoJson implements Terraformer.Serializer<String>, Terraformer.Deserializer<String> {
+public class GeoJson implements Terraformer.Serializer, Terraformer.Deserializer {
     public static final String DERP = "Error while parsing GeoJson: ";
     public static final String TYPE_KEY = "type";
     public static final String COORDINATES_KEY = "coordinates";
@@ -36,20 +36,10 @@ public class GeoJson implements Terraformer.Serializer<String>, Terraformer.Dese
         JsonObject obj = null;
         switch (geo.getType()) {
             case POINT:
-                obj = geometryToJsonObject((Point) geo);
-                break;
             case MULTIPOINT:
-                obj = geometryToJsonObject((MultiPoint) geo);
-                break;
             case LINESTRING:
-                obj = geometryToJsonObject((LineString) geo);
-                break;
             case MULTILINESTRING:
-                obj = geometryToJsonObject((MultiLineString) geo);
-                break;
             case POLYGON:
-                obj = geometryToJsonObject((Polygon) geo);
-                break;
             case MULTIPOLYGON:
                 obj = geometryToJsonObject((MultiPolygon)geo);
                 break;
