@@ -10,11 +10,11 @@ public final class Terraformer {
     public static Deserializer deserializer;
 
     public interface Deserializer {
-        public BaseGeometry deserialize(String in) throws TerraformerException;
+        public BaseGeometry decode(String in) throws TerraformerException;
     }
 
     public interface Serializer {
-        public String serialize(BaseGeometry geo);
+        public String encode(BaseGeometry geo);
     }
 
     /**

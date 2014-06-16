@@ -15,12 +15,12 @@ public class GeoJson implements Terraformer.Serializer, Terraformer.Deserializer
     public static final String FEATURES_KEY = "features";
 
     @Override
-    public BaseGeometry deserialize(String json) throws TerraformerException {
+    public BaseGeometry decode(String json) throws TerraformerException {
         return fromJson(json, GEOJSON_ERROR_PREFIX);
     }
 
     @Override
-    public String serialize(BaseGeometry geo) {
+    public String encode(BaseGeometry geo) {
         return toJson(geo);
     }
 
