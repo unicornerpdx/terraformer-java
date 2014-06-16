@@ -22,8 +22,8 @@ public class GeometryCollectionTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.GEOMETRYCOLLECTION, getGeometryCollection().getType());
-        assertEquals(GeoJsonType.GEOMETRYCOLLECTION, new GeometryCollection().getType());
+        assertEquals(GeometryType.GEOMETRYCOLLECTION, getGeometryCollection().getType());
+        assertEquals(GeometryType.GEOMETRYCOLLECTION, new GeometryCollection().getType());
     }
 
     @Test

@@ -1,6 +1,6 @@
 package com.esri.terraformer;
 
-public enum GeoJsonType {
+public enum GeometryType {
     POINT("Point"),
     MULTIPOINT("MultiPoint"),
     LINESTRING("LineString"),
@@ -13,7 +13,7 @@ public enum GeoJsonType {
 
     private final String jsonValue;
 
-    private GeoJsonType(String jsonValue) {
+    private GeometryType(String jsonValue) {
         this.jsonValue = jsonValue;
     }
 
@@ -22,7 +22,7 @@ public enum GeoJsonType {
         return jsonValue;
     }
 
-    public static GeoJsonType fromJson(String jsonValue) {
+    public static GeometryType fromJson(String jsonValue) {
         return valueOf(jsonValue.toUpperCase());
     }
 }

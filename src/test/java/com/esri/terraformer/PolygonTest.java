@@ -22,8 +22,8 @@ public class PolygonTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.POLYGON, getPolygon().getType());
-        assertEquals(GeoJsonType.POLYGON, new Polygon().getType());
+        assertEquals(GeometryType.POLYGON, getPolygon().getType());
+        assertEquals(GeometryType.POLYGON, new Polygon().getType());
     }
 
     @Test

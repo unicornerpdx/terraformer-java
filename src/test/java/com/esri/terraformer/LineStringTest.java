@@ -27,8 +27,8 @@ public class LineStringTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.LINESTRING, LineString.decodeLineString(VALID_LINE_STRING).getType());
-        assertEquals(GeoJsonType.LINESTRING, new LineString().getType());
+        assertEquals(GeometryType.LINESTRING, LineString.decodeLineString(VALID_LINE_STRING).getType());
+        assertEquals(GeometryType.LINESTRING, new LineString().getType());
     }
 
     @Test

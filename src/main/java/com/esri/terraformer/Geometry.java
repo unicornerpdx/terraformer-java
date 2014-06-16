@@ -9,7 +9,7 @@ import java.util.Collection;
 
 // A layer of abstraction so that our Geometry types can be
 // referred to collectively; primarily for supporting the GeometryCollection.
-public abstract class Geometry<T> extends GeoJson<T> {
+public abstract class Geometry<T> extends BaseGeometry<T> {
     public static final String COORDINATES_KEY = "coordinates";
 
     protected Geometry() {}
@@ -93,7 +93,7 @@ public abstract class Geometry<T> extends GeoJson<T> {
      * @throws TerraformerException
      */
     static Geometry<?> geometryFromObjectElement(JsonElement geomElem, String errorPrefix) throws TerraformerException {
-        GeoJson<?> geoJson = geoJsonFromObjectElement(geomElem, errorPrefix);
+        BaseGeometry<?> geoJson = geoJsonFromObjectElement(geomElem, errorPrefix);
         if (!(geoJson instanceof Geometry<?>)) {
             throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_GEOMETRY);
         }

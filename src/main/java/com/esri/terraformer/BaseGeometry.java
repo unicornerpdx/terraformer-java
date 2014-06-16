@@ -8,27 +8,27 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class GeoJson<T> extends ArrayList<T> {
+public abstract class BaseGeometry<T> extends ArrayList<T> {
     private static final String ERROR_PREFIX = "Error while parsing arbitrary GeoJSON: ";
 
     public static final String TYPE_KEY = "type";
 
-    protected GeoJson() {}
+    protected BaseGeometry() {}
 
-    protected GeoJson(int initialCapacity) {
+    protected BaseGeometry(int initialCapacity) {
         super(initialCapacity);
     }
 
-    protected GeoJson(Collection<T> c) {
+    protected BaseGeometry(Collection<T> c) {
         super(c);
     }
 
     /**
-     * Returns an enum representing one of the GeoJSON types.  See {@link GeoJsonType}.
+     * Returns an enum representing one of the GeoJSON types.  See {@link GeometryType}.
      *
      * @return
      */
-    public abstract GeoJsonType getType();
+    public abstract GeometryType getType();
 
     /**
      * Get the GeoJSON String representation of the object.
@@ -38,7 +38,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
     public abstract String toJson();
 
     /**
-     * Let's you know whether your object is up to GeoJson spec.
+     * Let's you know whether your object is up to BaseGeometry spec.
      *
      * When inflating an object from a JSON String, you'll get an exception if the String
      * is not valid.  This method is mostly intended for checking objects you have created manually
@@ -51,13 +51,13 @@ public abstract class GeoJson<T> extends ArrayList<T> {
     /**
      * Warning: This may be very costly for large Geometries. **Use with discretion**
      *
-     * Performs complete comparison between GeoJson objects, include equivalent permutations/rotations
+     * Performs complete comparison between Geometry objects, include equivalent permutations/rotations
      * for MultiPolygons, Polygons, MultiLineStrings and MultiPoints.
      *
      * @param obj
      * @return
      */
-    public abstract boolean isEquivalentTo(GeoJson<?> obj);
+    public abstract boolean isEquivalentTo(BaseGeometry<?> obj);
 
     protected abstract JsonObject toJsonObject(Gson gson);
 
@@ -65,7 +65,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         return null;
     }
 
-    public static GeoJson<?> decodeJson(String json) throws TerraformerException {
+    public static BaseGeometry<?> decodeJson(String json) throws TerraformerException {
         return geoJsonFromObjectElement(getElement(json, ERROR_PREFIX), ERROR_PREFIX);
     }
 
@@ -76,7 +76,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * @param obj2
      * @return
      */
-    static Boolean naiveEquals(GeoJson<?> obj1, GeoJson<?> obj2) {
+    static Boolean naiveEquals(BaseGeometry<?> obj1, BaseGeometry<?> obj2) {
         if (obj1 == null || obj2 == null) {
             return false;
         }
@@ -198,7 +198,7 @@ public abstract class GeoJson<T> extends ArrayList<T> {
      * @param object
      * @return
      */
-    static GeoJsonType getType(JsonObject object) {
+    static GeometryType getType(JsonObject object) {
         if (object == null) {
             return null;
         }
@@ -216,9 +216,9 @@ public abstract class GeoJson<T> extends ArrayList<T> {
             return null;
         }
 
-        GeoJsonType foundType;
+        GeometryType foundType;
         try {
-            foundType = GeoJsonType.fromJson(typeString);
+            foundType = GeometryType.fromJson(typeString);
         } catch (RuntimeException e) {
             return null;
         }
@@ -236,15 +236,15 @@ public abstract class GeoJson<T> extends ArrayList<T> {
         return json == null || json.length() <= 0;
     }
 
-    static GeoJson<?> geoJsonFromObjectElement(JsonElement gjElem, String errorPrefix) throws TerraformerException {
+    static BaseGeometry<?> geoJsonFromObjectElement(JsonElement gjElem, String errorPrefix) throws TerraformerException {
         JsonObject gjObject = objectFromElement(gjElem, errorPrefix);
 
-        GeoJsonType type = getType(gjObject);
+        GeometryType type = getType(gjObject);
         if (type == null) {
             throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_UNKNOWN_TYPE);
         }
 
-        GeoJson<?> geoJson = null;
+        BaseGeometry<?> geoJson = null;
         switch (type) {
             case POINT:
                 geoJson = Point.fromJsonObject(gjObject);

@@ -29,8 +29,8 @@ public final class Polygon extends Geometry<LineString> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.POLYGON;
+    public GeometryType getType() {
+        return GeometryType.POLYGON;
     }
 
     @Override
@@ -45,7 +45,7 @@ public final class Polygon extends Geometry<LineString> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -78,7 +78,7 @@ public final class Polygon extends Geometry<LineString> {
         }
 
         JsonObject object = getObject(polygonJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.POLYGON)) {
+        if (!(getType(object) == GeometryType.POLYGON)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Polygon\"");
         }
 

@@ -28,8 +28,8 @@ public final class Point extends Geometry<Double> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.POINT;
+    public GeometryType getType() {
+        return GeometryType.POINT;
     }
 
     @Override
@@ -44,7 +44,7 @@ public final class Point extends Geometry<Double> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         return obj != null && obj.getClass() == Point.class && equals(obj);
     }
 
@@ -54,7 +54,7 @@ public final class Point extends Geometry<Double> {
         }
 
         JsonObject object = getObject(pointJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.POINT)) {
+        if (!(getType(object) == GeometryType.POINT)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"Point\"");
         }
 

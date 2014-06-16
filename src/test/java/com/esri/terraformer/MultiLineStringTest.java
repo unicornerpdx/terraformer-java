@@ -21,8 +21,8 @@ public class MultiLineStringTest {
 
     @Test
     public void testGetType() throws Exception {
-        assertEquals(GeoJsonType.MULTILINESTRING, getMultiLineString().getType());
-        assertEquals(GeoJsonType.MULTILINESTRING, new MultiLineString().getType());
+        assertEquals(GeometryType.MULTILINESTRING, getMultiLineString().getType());
+        assertEquals(GeometryType.MULTILINESTRING, new MultiLineString().getType());
     }
 
     @Test

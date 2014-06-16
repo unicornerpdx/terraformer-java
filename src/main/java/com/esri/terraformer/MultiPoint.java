@@ -28,8 +28,8 @@ public final class MultiPoint extends Geometry<Point> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.MULTIPOINT;
+    public GeometryType getType() {
+        return GeometryType.MULTIPOINT;
     }
 
     @Override
@@ -44,7 +44,7 @@ public final class MultiPoint extends Geometry<Point> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -60,7 +60,7 @@ public final class MultiPoint extends Geometry<Point> {
         }
 
         JsonObject object = getObject(multiPointJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.MULTIPOINT)) {
+        if (!(getType(object) == GeometryType.MULTIPOINT)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"MultiPoint\"");
         }
 

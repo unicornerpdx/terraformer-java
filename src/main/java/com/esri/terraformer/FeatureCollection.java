@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.Collection;
 
-public final class FeatureCollection extends GeoJson<Feature> {
+public final class FeatureCollection extends BaseGeometry<Feature> {
     private static final String ERROR_PREFIX = "Error while parsing FeatureCollection: ";
 
     public static final String FEATURES_KEY = "features";
@@ -31,8 +31,8 @@ public final class FeatureCollection extends GeoJson<Feature> {
     }
 
     @Override
-    public GeoJsonType getType() {
-        return GeoJsonType.FEATURECOLLECTION;
+    public GeometryType getType() {
+        return GeometryType.FEATURECOLLECTION;
     }
 
     /**
@@ -77,7 +77,7 @@ public final class FeatureCollection extends GeoJson<Feature> {
     }
 
     @Override
-    public boolean isEquivalentTo(GeoJson<?> obj) {
+    public boolean isEquivalentTo(BaseGeometry<?> obj) {
         Boolean equal = naiveEquals(this, obj);
         if (equal != null) {
             return equal;
@@ -101,7 +101,7 @@ public final class FeatureCollection extends GeoJson<Feature> {
         }
 
         JsonObject object = getObject(featureCollectionJSON, ERROR_PREFIX);
-        if (!(getType(object) == GeoJsonType.FEATURECOLLECTION)) {
+        if (!(getType(object) == GeometryType.FEATURECOLLECTION)) {
             throw new TerraformerException(ERROR_PREFIX, TerraformerException.NOT_OF_TYPE + "\"FeatureCollection\"");
         }
 
