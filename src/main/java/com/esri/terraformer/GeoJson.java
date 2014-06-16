@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class GeoJson implements Terraformer.Serializer, Terraformer.Deserializer {
-    public static final String DERP = "Error while parsing GeoJson: ";
+    public static final String GEOJSON_ERROR_PREFIX = "Error while parsing GeoJson: ";
     public static final String TYPE_KEY = "type";
     public static final String COORDINATES_KEY = "coordinates";
     public static final String GEOMETRIES_KEY = "geometries";
@@ -16,7 +16,7 @@ public class GeoJson implements Terraformer.Serializer, Terraformer.Deserializer
 
     @Override
     public BaseGeometry deserialize(String json) throws TerraformerException {
-        return fromJson(json, DERP);
+        return fromJson(json, GEOJSON_ERROR_PREFIX);
     }
 
     @Override
