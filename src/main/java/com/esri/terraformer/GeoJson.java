@@ -41,10 +41,8 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
             case MULTILINESTRING:
             case POLYGON:
             case MULTIPOLYGON:
-                obj = geometryToJsonObject((Geometry)geo);
-                break;
             case GEOMETRYCOLLECTION:
-                obj = geometryCollectionToJsonObject((GeometryCollection)geo);
+                obj = geometryToJsonObject((Geometry)geo);
                 break;
             case FEATURE:
                 obj = featureToJsonObject((Feature)geo);
@@ -270,27 +268,6 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
         }
 
         return returnVal;
-    }
-
-    static JsonObject geometryCollectionToJsonObject(GeometryCollection gc) {
-        if (gc == null) {
-            return null;
-        }
-
-        JsonObject object = new JsonObject();
-        object.addProperty(TYPE_KEY, gc.getType().toString());
-
-        JsonArray geometries = new JsonArray();
-
-        for (Geometry geo : gc) {
-            if (geo != null) {
-                geometries.add(geometryToJsonObject(geo));
-            }
-        }
-
-        object.add(GEOMETRIES_KEY, geometries);
-
-        return object;
     }
 
     static Geometry<?> geometryFromObjectElement(JsonElement geomElem, String errorPrefix) throws TerraformerException {
@@ -556,8 +533,23 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
         JsonObject object = new JsonObject();
         object.addProperty(TYPE_KEY, geo.getType().toString());
 
-        JsonElement coords = gson.toJsonTree(geo);
-        object.add(COORDINATES_KEY, coords);
+        if (geo.getType() == GeometryType.GEOMETRYCOLLECTION) {
+            // geometry collections have special structure
+            GeometryCollection gc = (GeometryCollection) geo;
+            JsonArray geometries = new JsonArray();
+
+            for (Geometry g : gc) {
+                if (g != null) {
+                    geometries.add(geometryToJsonObject(g));
+                }
+            }
+
+            object.add(GEOMETRIES_KEY, geometries);
+        } else {
+            // points, linestrings, polygons etc
+            JsonElement coords = gson.toJsonTree(geo);
+            object.add(COORDINATES_KEY, coords);
+        }
 
         return object;
     }

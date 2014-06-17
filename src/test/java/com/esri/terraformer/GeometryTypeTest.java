@@ -5,7 +5,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class GeoJsonTypeTest {
+public class GeometryTypeTest {
     @Test
     public void testToString() throws Exception {
         assertEquals("FeatureCollection", GeometryType.FEATURECOLLECTION.toString());

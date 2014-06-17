@@ -17,6 +17,22 @@ public final class Terraformer {
         public String encode(BaseGeometry geo);
     }
 
+    public static Encoder getEncoder() {
+        return encoder;
+    }
+
+    public static void setEncoder(Encoder encoder) {
+        Terraformer.encoder = encoder;
+    }
+
+    public static Decoder getDecoder() {
+        return decoder;
+    }
+
+    public static void setDecoder(Decoder decoder) {
+        Terraformer.decoder = decoder;
+    }
+
     /**
      * Package private.
      *

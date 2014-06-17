@@ -1,6 +1,5 @@
 package com.esri.terraformer;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -16,21 +15,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class FeatureTest {
-    static final String MULTILINESTRING_FEATURE = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String POLYGON_FEATURE = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String MULTIPOLYGON_FEATURE = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String GEOMETRYCOLLECTION_FEATURE = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}]}]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String VALID_DIFF_ORDER = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String EMPTY_GEOMETRY = "{\"type\":\"Feature\",\"geometry\":{}}";
-    static final String WRONG_TYPE = "{\"type\":\"GeometryCollection\",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String NO_TYPE = "{\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String NOT_AN_OBJECT = "[\"type\",\"geometry\"]";
-    // one of the linestrings inside the polygon, inside the geometry collection, is not a linear ring
-    static final String INVALID_INNER_TYPE = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"GeometryCollection\",\"geometries\":[{\"type\":\"Point\",\"coordinates\":[100.0,0.0,90.0,90.0]},{\"type\":\"MultiPoint\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]},{\"type\":\"MultiLineString\",\"coordinates\":[[[100.0,0.0],[101.0,1.0]],[[103.0,5.0],[109.0,3.0]]]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]}]},{\"type\":\"Polygon\",\"coordinates\":[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]]},{\"type\":\"LineString\",\"coordinates\":[[100.0,0.0],[101.0,1.0]]}]},\"properties\":{\"innerObject\":{\"herp\":\"derp\",\"nurp\":100.5},\"innerArray\":[1,2,3,4],\"horse\":\"hands\"}}";
-    static final String NO_GEOMETRY = "{\"type\":\"Feature\"}";
-    static final String GEOMETRY_NOT_OBJECT = "{\"type\":\"Feature\",\"geometry\":100.0}";
-    static final String PROPERTIES_NOT_OBJECT = "{\"type\":\"Feature\",\"geometry\":{\"type\":\"MultiPolygon\",\"coordinates\":[[[[100.0,0.0],[104.0,0.0],[104.0,4.0],[100.0,4.0],[100.0,0.0]],[[101.0,0.5],[103.0,0.5],[103.0,1.0],[101.0,1.0],[101.0,0.5]],[[101.0,3.0],[103.0,3.0],[103.0,3.5],[101.0,3.5],[101.0,3.0]]],[[[95.0,0.0],[99.0,0.0],[99.0,4.0],[95.0,4.0],[95.0,0.0]],[[96.0,0.5],[98.0,0.5],[98.0,1.0],[96.0,1.0],[96.0,0.5]],[[96.0,3.0],[98.0,3.0],[98.0,3.5],[96.0,3.5],[96.0,3.0]]]]},\"properties\":100}";
-
     @Test
     public void testAdd() throws Exception {
         Feature feat = new Feature();
@@ -165,29 +149,11 @@ public class FeatureTest {
     }
 
     @Test
-    public void testToJson() throws Exception {
-        assertEquals(MULTILINESTRING_FEATURE, getMultiLineStringFeature().toJson());
-        assertEquals(POLYGON_FEATURE, getPolygonFeature().toJson());
-        assertEquals(MULTIPOLYGON_FEATURE, getMultiPolygonFeature().toJson());
-        assertEquals(GEOMETRYCOLLECTION_FEATURE, getGeometryCollectionFeature().toJson());
-        assertEquals(GEOMETRYCOLLECTION_FEATURE, new Feature(GeometryCollectionTest.getGeometryCollection(),
-                getProperties()).toJson());
-    }
-
-    @Test
-    public void testToJsonObject() throws Exception {
-        JsonObject obj1 = getGeometryCollectionFeature().toJsonObject(null);
-        JsonObject obj2 = getGeometryCollectionFeature().toJsonObject(new Gson());
-        assertEquals(obj1.toString(), obj2.toString());
-    }
-
-    @Test
     public void testIsValid() throws Exception {
-        assertTrue(Feature.decodeFeature(MULTILINESTRING_FEATURE).isValid());
-        assertTrue(Feature.decodeFeature(POLYGON_FEATURE).isValid());
-        assertTrue(Feature.decodeFeature(MULTIPOLYGON_FEATURE).isValid());
-        assertTrue(Feature.decodeFeature(GEOMETRYCOLLECTION_FEATURE).isValid());
-        assertTrue(Feature.decodeFeature(EMPTY_GEOMETRY).isValid());
+        assertTrue(getMultiLineStringFeature().isValid());
+        assertTrue(getPolygonFeature().isValid());
+        assertTrue(getMultiPolygonFeature().isValid());
+        assertTrue(getGeometryCollectionFeature().isValid());
         // creating a feature from some element of a GeometryCollection
         assertTrue(new Feature(GeometryCollectionTest.getGeometryCollection().get(3), getProperties()).isValid());
         // geometry collection can have empty geometries
@@ -218,16 +184,12 @@ public class FeatureTest {
 
     @Test
     public void testIsEquivalentTo() throws Exception {
-        Feature feat = Feature.decodeFeature(GEOMETRYCOLLECTION_FEATURE);
-        Feature otherFeat = getGeometryCollectionFeature();
-        Feature anotherFeat = Feature.decodeFeature(VALID_DIFF_ORDER);
+        Feature feat = getGeometryCollectionFeature();
+        Feature otherFeat = new Feature(GeometryCollectionTest.getGeomCollDiffOrder(), getProperties());
 
+        assertTrue(feat.isEquivalentTo(feat));
         assertTrue(feat.isEquivalentTo(otherFeat));
-        assertTrue(feat.isEquivalentTo(anotherFeat));
         assertTrue(otherFeat.isEquivalentTo(feat));
-        assertTrue(otherFeat.isEquivalentTo(anotherFeat));
-        assertTrue(anotherFeat.isEquivalentTo(feat));
-        assertTrue(anotherFeat.isEquivalentTo(otherFeat));
         // rotated linear ring, also no properties
         assertTrue(feat.isEquivalentTo(new Feature(new GeometryCollection(
                 PointTest.getPoint(),
@@ -292,88 +254,6 @@ public class FeatureTest {
         )));
     }
 
-    @Test
-    public void testDecodeFeature() throws Exception {
-        assertEquals(MULTILINESTRING_FEATURE, Feature.decodeFeature(MULTILINESTRING_FEATURE).toJson());
-        assertEquals(POLYGON_FEATURE, Feature.decodeFeature(POLYGON_FEATURE).toJson());
-        assertEquals(MULTIPOLYGON_FEATURE, Feature.decodeFeature(MULTIPOLYGON_FEATURE).toJson());
-        assertEquals(GEOMETRYCOLLECTION_FEATURE, Feature.decodeFeature(GEOMETRYCOLLECTION_FEATURE).toJson());
-        assertEquals(EMPTY_GEOMETRY, Feature.decodeFeature(EMPTY_GEOMETRY).toJson());
-
-        boolean gotException = false;
-
-        try {
-            Feature.decodeFeature(WRONG_TYPE);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.NOT_OF_TYPE));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature.decodeFeature(NO_TYPE);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.NOT_OF_TYPE));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature.decodeFeature(NOT_AN_OBJECT);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.NOT_A_JSON_OBJECT));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature.decodeFeature(INVALID_INNER_TYPE);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.INNER_LINESTRING_NOT_RING));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature.decodeFeature(NO_GEOMETRY);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.GEOMETRY_KEY_NOT_FOUND));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature.decodeFeature(GEOMETRY_NOT_OBJECT);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_OBJECT));
-
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature.decodeFeature(PROPERTIES_NOT_OBJECT);
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.PROPERTIES_NOT_OBJECT));
-
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-    }
-
     static Feature getMultiLineStringFeature() {
         return new Feature(MultiLineStringTest.getMultiLineString(), getProperties());
     }
@@ -407,36 +287,5 @@ public class FeatureTest {
 
         props.add("horse", new JsonPrimitive("hands"));
         return props;
-    }
-
-    @Test
-    public void testFeatureFromObjectElement() throws Exception {
-        Feature ft1 = Feature.featureFromObjectElement(BaseGeometry.getElement(MULTILINESTRING_FEATURE, "derp"), "derp");
-        Feature ft2 = Feature.featureFromObjectElement(BaseGeometry.getElement(POLYGON_FEATURE, "derp"), "derp");
-        Feature ft3 = Feature.featureFromObjectElement(BaseGeometry.getElement(MULTIPOLYGON_FEATURE, "derp"), "derp");
-        Feature ft4 = Feature.featureFromObjectElement(BaseGeometry.getElement(GEOMETRYCOLLECTION_FEATURE, "derp"), "derp");
-
-        boolean gotException = false;
-
-        try {
-            Feature ft5 = Feature.featureFromObjectElement(
-                    BaseGeometry.getElement(MultiPolygonTest.VALID_MULTI_POLYGON, "derp"), "derp");
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_FEATURE));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
-        gotException = false;
-
-        try {
-            Feature ft6 = Feature.featureFromObjectElement(
-                    BaseGeometry.getElement(GeometryCollectionTest.VALID_GEOMETRY_COLLECTION, "derp"), "derp");
-        } catch (TerraformerException e) {
-            assertTrue(e.getMessage().contains(TerraformerException.ELEMENT_NOT_FEATURE));
-            gotException = true;
-        }
-
-        assertTrue(gotException);
     }
 }
