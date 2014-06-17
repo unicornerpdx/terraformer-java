@@ -2,6 +2,7 @@ package com.esri.terraformer;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public final class Polygon extends Geometry<LineString> {
     static final String ERROR_PREFIX = "Error while parsing Polygon: ";
@@ -38,6 +39,14 @@ public final class Polygon extends Geometry<LineString> {
         }
 
         return true;
+    }
+
+    public LineString getOuterRing() {
+        return get(0);
+    }
+
+    public List<LineString> getHoles() {
+        return subList(1, size()-1);
     }
 
     @Override

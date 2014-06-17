@@ -77,6 +77,22 @@ public final class LineString extends Geometry<Point> {
     }
 
     /**
+     * Turns a linestring into a linear ring by duplicating the first point onto the end of the points array.
+     */
+    public void closeRing() {
+        if (!isLinearRing()) {
+            add(get(0));
+        }
+    }
+
+    /**
+     * Reverses the order of points in this linestring.
+     */
+    public void reverse() {
+        Collections.reverse(this);
+    }
+
+    /**
      * Package private. Might return null.
      *
      * @param lr1
