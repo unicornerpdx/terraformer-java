@@ -38,15 +38,15 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
 
     public static BaseGeometry decode(JsonObject g) throws TerraformerException {
         if (isPoint(g)) {
-            return decodePoint(g);
+            return pointFromJsonObject(g);
         } else if (isMultiPoint(g)) {
-            return decodeMultiPoint(g);
+            return multiPointFromJsonObject(g);
         } else if (isPolyline(g)) {
-            return decodePolyline(g);
+            return polyLineFromJsonObject(g);
         } else if (isPolygon(g)) {
-            return decodePolygon(g);
+            return polygonFromJsonObject(g);
         } else if (isFeature(g)) {
-            return decodeFeature(g);
+            return featureFromJsonObject(g);
         } else {
             // TODO: throw exception
             return null;
@@ -58,7 +58,22 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
 
     /* --- Decode EsriJSON --- */
 
-    public static Point decodePoint(JsonObject g) throws TerraformerException {
+    public static Point decodePoint(String pointJSON) throws TerraformerException {
+        if (Terraformer.isEmpty(pointJSON)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        String ep = Point.ERROR_PREFIX;
+
+        JsonObject object = Terraformer.getObject(pointJSON, ep);
+        if (!isPoint(object)) {
+            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "Point");
+        }
+
+        return pointFromJsonObject(object);
+    }
+
+    static Point pointFromJsonObject(JsonObject g) throws TerraformerException {
         ArrayList<Double> coords = new ArrayList<Double>();
 
         coords.add(g.get("x").getAsDouble());
@@ -78,23 +93,53 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return new Point(coords);
     }
 
-    public static MultiPoint decodeMultiPoint(JsonObject g) {
+    public static MultiPoint decodeMultiPoint(String multiPointJSON) throws TerraformerException {
+        if (Terraformer.isEmpty(multiPointJSON)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        String ep = MultiPoint.ERROR_PREFIX;
+
+        JsonObject object = Terraformer.getObject(multiPointJSON, ep);
+        if (!isMultiPoint(object)) {
+            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "MultiPoint");
+        }
+
+        return multiPointFromJsonObject(object);
+    }
+
+    static MultiPoint multiPointFromJsonObject(JsonObject g) {
         ArrayList<Point> points = new ArrayList<Point>();
 
         for (JsonElement p : g.getAsJsonArray("points")) {
-            points.add(getPointFromCoordinates(g, p));
+            points.add(pointFromCoordinates(g, p));
         }
 
         return new MultiPoint(points);
     }
 
-    public static Geometry decodePolyline(JsonObject g) {
+    public static Geometry decodePolyLine(String polyLineJSON) throws TerraformerException {
+        if (Terraformer.isEmpty(polyLineJSON)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        String ep = LineString.ERROR_PREFIX;
+
+        JsonObject object = Terraformer.getObject(polyLineJSON, ep);
+        if (!isPolyline(object)) {
+            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "LineString or MultiLineString");
+        }
+
+        return polyLineFromJsonObject(object);
+    }
+
+    static Geometry polyLineFromJsonObject(JsonObject g) {
         MultiLineString mls = new MultiLineString();
 
         for (JsonElement path : g.getAsJsonArray("paths")) {
             LineString l = new LineString();
             for (JsonElement p : path.getAsJsonArray()) {
-                l.add(getPointFromCoordinates(g, p));
+                l.add(pointFromCoordinates(g, p));
             }
             mls.add(l);
         }
@@ -106,14 +151,29 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return mls;
     }
 
-    public static Geometry decodePolygon(JsonObject g) {
+    public static Geometry decodePolygon(String polygonJSON) throws TerraformerException {
+        if (Terraformer.isEmpty(polygonJSON)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        String ep = Polygon.ERROR_PREFIX;
+
+        JsonObject object = Terraformer.getObject(polygonJSON, ep);
+        if (!isPolygon(object)) {
+            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "Polygon or MultiPolygon");
+        }
+
+        return polygonFromJsonObject(object);
+    }
+
+    static Geometry polygonFromJsonObject(JsonObject g) {
         MultiPolygon outerRings = new MultiPolygon();
         MultiLineString holes = new MultiLineString();
 
         for (JsonElement ring : g.getAsJsonArray("rings")) {
            LineString r = new LineString();
             for (JsonElement p : ring.getAsJsonArray()) {
-                r.add(getPointFromCoordinates(g, p));
+                r.add(pointFromCoordinates(g, p));
             }
 
             r.closeRing();
@@ -148,7 +208,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             if (!contained) {
                h.reverse();
                outerRings.add(new Polygon(h));
-    }
+            }
         }
 
         // return a Polygon or MultiPolygon depending on how many outer rings we are left with.
@@ -223,7 +283,22 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return false;
     }
 
-    public static Feature decodeFeature(JsonObject g) throws TerraformerException {
+    public static Feature decodeFeature(String featureJSON) throws TerraformerException {
+        if (Terraformer.isEmpty(featureJSON)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        String ep = Feature.ERROR_PREFIX;
+
+        JsonObject object = Terraformer.getObject(featureJSON, ep);
+        if (!isFeature(object)) {
+            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "Feature");
+        }
+
+        return featureFromJsonObject(object);
+    }
+
+    static Feature featureFromJsonObject(JsonObject g) throws TerraformerException {
         Geometry geometry = null;
         try {
             geometry = (Geometry) decode(g.get("geometry").getAsJsonObject());
@@ -237,7 +312,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     }
 
     // TODO: make sure everything has 'hasZ' and 'hasM'
-    static Point getPointFromCoordinates(JsonObject g, JsonElement array) {
+    static Point pointFromCoordinates(JsonObject g, JsonElement array) {
         JsonArray r = array.getAsJsonArray();
 
         ArrayList<Double> coords = new ArrayList<Double>();
