@@ -3,7 +3,6 @@ package com.esri.terraformer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,8 @@ import java.util.ArrayList;
  * Feature              Feature
  * FeatureCollection    (Array of Feature)
  */
-public class EsriJson implements Terraformer.Serializer, Terraformer.Deserializer {
+public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
+    static final String ESRIJSON_ERROR_PREFIX = "Error while parsing Esri JSON: ";
 
     @Override
     public String encode(BaseGeometry geo) {
@@ -33,12 +33,10 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
 
     @Override
     public BaseGeometry decode(String s) throws TerraformerException {
-        JsonObject g = new JsonParser().parse(s).getAsJsonObject();
-
-        return decode(g);
+        return decode(Terraformer.getObject(s, ESRIJSON_ERROR_PREFIX));
     }
 
-    public BaseGeometry decode(JsonObject g) throws TerraformerException {
+    public static BaseGeometry decode(JsonObject g) throws TerraformerException {
         if (isPoint(g)) {
             return decodePoint(g);
         } else if (isMultiPoint(g)) {
@@ -60,7 +58,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
 
     /* --- Decode EsriJSON --- */
 
-    private Point decodePoint(JsonObject g) throws TerraformerException {
+    public static Point decodePoint(JsonObject g) throws TerraformerException {
         ArrayList<Double> coords = new ArrayList<Double>();
 
         coords.add(g.get("x").getAsDouble());
@@ -80,7 +78,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
         return new Point(coords);
     }
 
-    private MultiPoint decodeMultiPoint(JsonObject g) {
+    public static MultiPoint decodeMultiPoint(JsonObject g) {
         ArrayList<Point> points = new ArrayList<Point>();
 
         for (JsonElement p : g.getAsJsonArray("points")) {
@@ -90,7 +88,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
         return new MultiPoint(points);
     }
 
-    private Geometry decodePolyline(JsonObject g) {
+    public static Geometry decodePolyline(JsonObject g) {
         MultiLineString mls = new MultiLineString();
 
         for (JsonElement path : g.getAsJsonArray("paths")) {
@@ -108,7 +106,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
         return mls;
     }
 
-    private Geometry decodePolygon(JsonObject g) {
+    public static MultiPolygon decodePolygon(JsonObject g) {
         MultiPolygon outerRings = new MultiPolygon();
         MultiLineString holes = new MultiLineString();
 
@@ -138,10 +136,10 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
 
         }
 
-        return new Polygon();
+        return new MultiPolygon();
     }
 
-    private Feature decodeFeature(JsonObject g) throws TerraformerException {
+    public static Feature decodeFeature(JsonObject g) throws TerraformerException {
         Geometry geometry = null;
         try {
             geometry = (Geometry) decode(g.get("geometry").getAsJsonObject());
@@ -155,7 +153,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
     }
 
     // TODO: make sure everything has 'hasZ' and 'hasM'
-    private Point getPointFromCoordinates(JsonObject g, JsonElement array) {
+    static Point getPointFromCoordinates(JsonObject g, JsonElement array) {
         JsonArray r = array.getAsJsonArray();
 
         ArrayList<Double> coords = new ArrayList<Double>();
@@ -183,7 +181,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
      * @param input
      * @return
      */
-    private Polygon orientRings(Polygon input) {
+    static Polygon orientRings(Polygon input) {
         Polygon output = new Polygon();
 
         LineString outerRing = input.getOuterRing();
@@ -208,7 +206,7 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
         return output;
     }
 
-    private boolean ringIsClockwise(LineString ring) {
+    static boolean ringIsClockwise(LineString ring) {
         int total = 0;
         Point p1, p2;
         p1 = ring.get(0);
@@ -220,29 +218,70 @@ public class EsriJson implements Terraformer.Serializer, Terraformer.Deserialize
         return (total >= 0);
     }
 
+    static boolean polygonContainsPoint(Polygon pg, Point p) {
+        if (pg == null || p == null) {
+            return false;
+        }
+
+        if (pg.size() == 1) {
+            return ringContainsPoint(pg.get(0), p);
+        }
+
+        if (ringContainsPoint(pg.get(0), p)) {
+            for (int i = 1; i < pg.size(); i++) {
+                if (ringContainsPoint(pg.get(i), p)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    static boolean ringContainsPoint(LineString ring, Point p) {
+        if (ring == null || p == null) {
+            return false;
+        }
+
+        boolean returnVal = false;
+        int l = ring.size();
+        int j = l - 1;
+        for (int i = -1; ++i < l; j = i) {
+            if (((ring.get(i).get(1) <= p.get(1) && p.get(1) < ring.get(j).get(1)) ||
+                    (ring.get(j).get(1) <= p.get(1) && p.get(1) < ring.get(i).get(1))) &&
+                    (p.get(0) < (ring.get(j).get(0) - ring.get(i).get(0)) * (p.get(1) - ring.get(i).get(1)) / (ring.get(j).get(1) - ring.get(i).get(1)) + ring.get(i).get(0))) {
+                returnVal = !returnVal;
+            }
+        }
+
+        return returnVal;
+    }
+
     /* --- Type Detection --- */
 
-    private boolean isPoint(JsonObject g) {
+    static boolean isPoint(JsonObject g) {
         return hasAllKeys(g, "x", "y");
     }
 
-    private boolean isMultiPoint(JsonObject g) {
+    static boolean isMultiPoint(JsonObject g) {
         return g.has("points");
     }
 
-    private boolean isPolyline(JsonObject g) {
+    static boolean isPolyline(JsonObject g) {
         return g.has("paths");
     }
 
-    private boolean isPolygon(JsonObject g) {
+    static boolean isPolygon(JsonObject g) {
         return g.has("rings");
     }
 
-    private boolean isFeature(JsonObject g) {
+    static boolean isFeature(JsonObject g) {
         return hasAllKeys(g, "geometry", "attributes");
     }
 
-    private boolean hasAllKeys(JsonObject g, String... keys) {
+    static boolean hasAllKeys(JsonObject g, String... keys) {
         boolean hasAll = true;
         for (String k : keys) {
             if (!g.has(k)) {
