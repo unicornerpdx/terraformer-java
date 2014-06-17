@@ -33,6 +33,14 @@ public final class Terraformer {
         Terraformer.decoder = decoder;
     }
 
+    public BaseGeometry decode(String in) throws TerraformerException {
+        if (decoder != null) {
+            return decoder.decode(in);
+        }
+
+        throw new TerraformerException("", "There is no active decoder available!");
+    }
+
     /**
      * Package private.
      *
