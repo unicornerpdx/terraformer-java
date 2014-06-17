@@ -6,8 +6,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public final class Terraformer {
-    public static Encoder encoder;
-    public static Decoder decoder;
+    static Encoder encoder;
+    static Decoder decoder;
+
+    // use GeoJson by default
+    static {
+        GeoJson gj = new GeoJson();
+        encoder = gj;
+        decoder = gj;
+    }
 
     public interface Decoder {
         public BaseGeometry decode(String in) throws TerraformerException;

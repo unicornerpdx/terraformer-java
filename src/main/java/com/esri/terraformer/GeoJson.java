@@ -132,10 +132,6 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
     }
 
     static JsonObject featureCollectionToJsonObject(FeatureCollection fc) {
-        if (fc == null) {
-            return null;
-        }
-
         JsonObject object = new JsonObject();
         object.addProperty(TYPE_KEY, fc.getType().toString());
 
@@ -215,10 +211,6 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
     }
 
     static JsonObject featureToJsonObject(Feature feature) {
-        if (feature == null) {
-            return null;
-        }
-
         JsonObject object = new JsonObject();
         object.addProperty(TYPE_KEY, feature.getType().toString());
 
@@ -524,10 +516,6 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
     }
 
     static JsonObject geometryToJsonObject(Geometry geo) {
-        if (geo == null) {
-            return null;
-        }
-
         Gson gson = new Gson();
 
         JsonObject object = new JsonObject();

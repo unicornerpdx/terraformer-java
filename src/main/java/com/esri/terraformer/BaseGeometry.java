@@ -49,7 +49,11 @@ public abstract class BaseGeometry<T> extends ArrayList<T> {
      * @return
      */
     public String encode() {
-        return Terraformer.encoder.encode(this);
+        if (Terraformer.encoder != null) {
+            return Terraformer.encoder.encode(this);
+        }
+
+        return null;
     }
 
     /**
