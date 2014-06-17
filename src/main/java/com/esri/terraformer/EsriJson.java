@@ -106,7 +106,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return mls;
     }
 
-    public static MultiPolygon decodePolygon(JsonObject g) {
+    public static Geometry decodePolygon(JsonObject g) {
         MultiPolygon outerRings = new MultiPolygon();
         MultiLineString holes = new MultiLineString();
 
@@ -132,11 +132,95 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         for (LineString h : holes) {
             boolean contained = false;
 
-            //TODO: finish me
+            // loop over all outer rings and see if they contain the hole
+            for (Polygon p : outerRings) {
+                if (coordinatesContainCoordinates(p.getOuterRing(), h)) {
+                    // the hole is contained. add it to our polygon
+                    p.add(h);
 
+                    contained = true;
+                    break;
+        }
+            }
+
+            // no outer rings contain this hole.
+            // reverse the direction and add it to outer rings, since it can't be a hole!
+            if (!contained) {
+               h.reverse();
+               outerRings.add(new Polygon(h));
+    }
         }
 
-        return new MultiPolygon();
+        // return a Polygon or MultiPolygon depending on how many outer rings we are left with.
+        if (outerRings.size() == 1) {
+            return outerRings.get(0);
+        } else {
+            return outerRings;
+        }
+    }
+
+    private static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
+        boolean intersects = lineStringsIntersect(outer, inner);
+        boolean contains = ringContainsPoint(outer, inner.get(0));
+
+        return (!intersects && contains);
+    }
+
+    private static boolean lineStringsIntersect(LineString a, LineString b) {
+        for (int i = 0; i < a.size() - 1; i++) {
+            for (int j = 0; j < b.size() - 1; j++) {
+                if (lineLineIntersect(a.get(i), a.get(i + 1), b.get(j), b.get(j + 1))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean lineStringsIntersect(MultiLineString a, LineString b) {
+        for (LineString l : a) {
+            if (lineStringsIntersect(l, b)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean lineStringsIntersect(LineString a, MultiLineString b) {
+        for (LineString l : b) {
+            if (lineStringsIntersect(a, l)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private static boolean lineLineIntersect(Point a1, Point a2, Point b1, Point b2) {
+        double a1_x = a1.get(0);
+        double a1_y = a1.get(1);
+        double a2_x = a2.get(0);
+        double a2_y = a2.get(1);
+        double b1_x = b1.get(0);
+        double b1_y = b1.get(1);
+        double b2_x = b2.get(0);
+        double b2_y = b2.get(1);
+
+        // compute determinants
+        double ua_t = (b2_x - b1_x) * (a1_y - b1_y) - (b2_y - b1_y) * (a1_x - b1_x);
+        double ub_t = (a2_x - a1_x) * (a1_y - b1_y) - (a2_y - a1_y) * (a1_x - b1_x);
+        double u_b  = (b2_y - b1_y) * (a2_x - a1_x) - (b2_x - b1_x) * (a2_y - a1_y);
+
+        // if segments are not parallel
+        if (u_b != 0) {
+            double ua = ua_t / u_b;
+            double ub = ub_t / u_b;
+
+            // check for segment intersection only, not infinite line intersection
+            return (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1);
+        }
+
+        return false;
     }
 
     public static Feature decodeFeature(JsonObject g) throws TerraformerException {
