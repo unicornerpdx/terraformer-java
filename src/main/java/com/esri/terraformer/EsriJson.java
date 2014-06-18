@@ -3,6 +3,7 @@ package com.esri.terraformer;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,30 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
 
     @Override
     public String encode(BaseGeometry geo) {
-        return "";
+        switch (geo.getType()) {
+            case POINT:
+                return encodePoint((Point)geo);
+            case MULTIPOINT:
+                return encodeMultiPoint((MultiPoint)geo);
+            case LINESTRING:
+                return encodeLineString((LineString) geo);
+            case MULTILINESTRING:
+                return encodeMultiLineString((MultiLineString) geo);
+            case POLYGON:
+                return encodePolygon((Polygon)geo);
+            case MULTIPOLYGON:
+                return encodePolygon((MultiPolygon)geo);
+            case GEOMETRYCOLLECTION:
+                return encodeGeometryCollection((GeometryCollection) geo);
+            case FEATURE:
+                return encodeFeature((Feature)geo);
+            case FEATURECOLLECTION:
+                return encodeFeatureCollection((FeatureCollection) geo);
+
+            default:
+                //TODO: error out
+                return null;
+        }
     }
 
     @Override
@@ -54,7 +78,88 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     }
 
     /* --- Encode EsriJSON --- */
-    // TODO: this
+
+    public String encodePoint(Point p) {
+        JsonObject o = new JsonObject();
+
+        o.addProperty("x", p.getX());
+        o.addProperty("y", p.getY());
+        if (p.size() > 2) { o.addProperty("z", p.getZ()); }
+        if (p.size() > 3) { o.addProperty("m", p.get(3)); }
+
+        return o.toString();
+    }
+
+    private String encodeMultiPoint(MultiPoint mp) {
+        JsonObject o = makeJsonObject(mp.get(0).size());
+
+        JsonArray points = new JsonArray();
+        for (Point p : mp) {
+            points.add(pointToCoordinates(p));
+        }
+        o.add("points", points);
+
+        return o.toString();
+    }
+
+    private String encodeLineString(LineString ls) {
+        return encodeMultiLineString(new MultiLineString(ls));
+    }
+
+    private String encodeMultiLineString(MultiLineString mls) {
+        JsonObject o = makeJsonObject(mls.get(0).get(0).size());
+
+        JsonArray paths = new JsonArray();
+        for (LineString ls : mls) {
+            JsonArray points = new JsonArray();
+            for (Point p : ls) {
+                points.add(pointToCoordinates(p));
+            }
+            paths.add(points);
+        }
+        o.add("paths", paths);
+
+        return o.toString();
+    }
+
+    private String encodePolygon(Polygon p) {
+        return encodePolygon(new MultiPolygon(p));
+    }
+
+    private String encodePolygon(MultiPolygon mp) {
+        return "TODO";
+    }
+
+    private String encodeGeometryCollection(GeometryCollection gc) {
+        return "TODO";
+    }
+
+    private String encodeFeature(Feature f) {
+        return "TODO";
+    }
+
+    private String encodeFeatureCollection(FeatureCollection fc) {
+        return "TODO";
+    }
+
+    private JsonObject makeJsonObject(Integer numCoords) {
+        JsonObject o = new JsonObject();
+
+        if (numCoords != null) {
+            o.addProperty("hasZ", numCoords > 2);
+            o.addProperty("hasM", numCoords > 3);
+        }
+
+        return o;
+    }
+
+    private JsonArray pointToCoordinates(Point p) {
+        JsonArray r = new JsonArray();
+        for (Double d : p) {
+            r.add(new JsonPrimitive(d));
+        }
+        return r;
+    }
 
     /* --- Decode EsriJSON --- */
 
@@ -79,11 +184,13 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         coords.add(g.get("x").getAsDouble());
         coords.add(g.get("y").getAsDouble());
 
-        boolean hasZ = g.get("z").getAsBoolean();
+        boolean hasZ = g.get("hasZ").getAsBoolean();
         if (hasZ) {
             coords.add(g.get("z").getAsDouble());
         }
-        if (g.has("m")) {
+
+        boolean hasM = g.get("hasM").getAsBoolean();
+        if (hasM) {
             if (!hasZ) {
                 coords.add(0.0); // z = null
             }
@@ -254,7 +361,6 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         }
         return false;
     }
-
 
     private static boolean lineLineIntersect(Point a1, Point a2, Point b1, Point b2) {
         double a1_x = a1.get(0);
