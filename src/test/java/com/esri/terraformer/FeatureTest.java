@@ -132,7 +132,6 @@ public class FeatureTest {
     @Test
     public void testGetSetProperties() throws Exception {
         Feature feat = new Feature();
-        assertNull(feat.getProperties());
         JsonObject props = getProperties();
         feat.setProperties(props);
         assertEquals(props, feat.getProperties());

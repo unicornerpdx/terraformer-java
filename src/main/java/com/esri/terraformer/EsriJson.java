@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
 
-/**
+/*
  * Resources:
  * ----------
  * http://resources.arcgis.com/en/help/rest/apiref/geometry.html
@@ -23,6 +23,7 @@ import java.util.ArrayList;
  * MultiPolygon         Polygon
  * Feature              Feature
  * FeatureCollection    (Array of Feature)
+ * GeometryCollection   (Array of Geometry)
  */
 public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     private static final String DECODE_ERROR_PREFIX = "Error while parsing Esri JSON: ";
@@ -186,6 +187,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             // add oriented rings from all polygons in the multipolygon to the array
             rings.addAll(polygonToOrientedRings(p));
         }
+        o.add("rings", rings);
 
         return o;
     }
