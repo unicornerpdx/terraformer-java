@@ -18,7 +18,6 @@ public class MultiPointTest {
         assertTrue(getMultiPoint().isValid());
         assertTrue(new MultiPoint(getMultiPoint()).isValid());
         assertFalse(new MultiPoint().isValid());
-        assertFalse(new MultiPoint(new Point(100d)).isValid());
         assertFalse(new MultiPoint(new Point(100d, null)).isValid());
     }
 

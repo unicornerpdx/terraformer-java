@@ -19,7 +19,6 @@ public class PointTest {
         assertTrue(new Point(getPoint()).isValid());
         assertFalse(new Point().isValid());
         assertFalse(new Point(100d, null).isValid());
-        assertFalse(new Point(100d).isValid());
     }
 
     @Test
@@ -32,7 +31,6 @@ public class PointTest {
         assertFalse(p.isEquivalentTo(new Point(4)));
         assertFalse(p.isEquivalentTo(new Point(100d,0d)));
         assertFalse(p.isEquivalentTo(new Point(100d,0d,90d)));
-        assertFalse(p.isEquivalentTo(new Point(100d,0d,90d,null)));
     }
 
     static Point getPoint() {

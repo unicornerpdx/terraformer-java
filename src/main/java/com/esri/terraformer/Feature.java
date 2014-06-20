@@ -86,6 +86,15 @@ public class Feature extends BaseGeometry<Geometry<?>> {
     /**
      * returns the {@link Geometry} (if existing) associated with this Feature, or null.
      *
+     * @return may be null if the Feature has no geometry
+     */
+    public Geometry<?> getGeometry() {
+        return get();
+    }
+
+    /**
+     * returns the {@link Geometry} (if existing) associated with this Feature, or null.
+     *
      * @param i
      * @return may be null if the Feature has no geometry
      */

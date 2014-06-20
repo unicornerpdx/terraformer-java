@@ -18,7 +18,6 @@ public class LineStringTest {
         assertTrue(getLineString().isValid());
         assertTrue(new LineString(getLineString()).isValid());
         assertFalse(new LineString().isValid());
-        assertFalse(new LineString(new Point(100d)).isValid());
         assertFalse(new LineString(new Point(100d, 0d), null).isValid());
     }
 
