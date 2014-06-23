@@ -99,6 +99,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      * @return may be null if the Feature has no geometry
      */
     @Override
+    @Deprecated
     public Geometry<?> get(int i) {
         if (size() > 0) {
             return super.get(0);
@@ -142,6 +143,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      * @return may be null if the Feature had no geometry previously
      */
     @Override
+    @Deprecated
     public final Geometry<?> set(int i, Geometry<?> geometry) {
         if (size() < 1) {
             super.add(geometry);
@@ -159,6 +161,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      * @return
      */
     @Override
+    @Deprecated
     public final boolean addAll(Collection<? extends Geometry<?>> geometries) {
         if (geometries != null) {
             for (Geometry<?> geometry : geometries) {
@@ -181,6 +184,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      * @return
      */
     @Override
+    @Deprecated
     public final boolean addAll(int i, Collection<? extends Geometry<?>> geometries) {
         if (geometries != null) {
             for (Geometry<?> geometry : geometries) {
@@ -210,6 +214,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      * @return the geometry that was removed, or null
      */
     @Override
+    @Deprecated
     public Geometry<?> remove(int i) {
         if (size() > 0) {
             return super.remove(0);
@@ -224,6 +229,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      * @return
      */
     @Override
+    @Deprecated
     protected void removeRange(int i, int i2) {
         if (size() > 0) {
             remove(0);
@@ -231,11 +237,13 @@ public class Feature extends BaseGeometry<Geometry<?>> {
     }
 
     @Override
+    @Deprecated
     public List<Geometry<?>> subList(int i, int i2) {
         return this;
     }
 
     @Override
+    @Deprecated
     public final void ensureCapacity(int i) {}
 
     public JsonObject getProperties() {
