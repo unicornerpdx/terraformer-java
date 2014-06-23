@@ -11,7 +11,7 @@ import java.util.List;
 public class Feature extends BaseGeometry<Geometry<?>> {
     static final String ERROR_PREFIX = "Error while parsing Feature: ";
 
-    private JsonObject mProperties;
+    private JsonObject mProperties = new JsonObject();
 
     /**
      * A valid Feature contains 0 or exactly 1 {@link Geometry}. It may also optionally contain a "properties" object.
@@ -81,6 +81,15 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      */
     public Geometry<?> get() {
         return get(0);
+    }
+
+    /**
+     * returns the {@link Geometry} (if existing) associated with this Feature, or null.
+     *
+     * @return may be null if the Feature has no geometry
+     */
+    public Geometry<?> getGeometry() {
+        return get();
     }
 
     /**

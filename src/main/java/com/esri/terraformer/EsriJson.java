@@ -7,7 +7,7 @@ import com.google.gson.JsonPrimitive;
 
 import java.util.ArrayList;
 
-/**
+/*
  * Resources:
  * ----------
  * http://resources.arcgis.com/en/help/rest/apiref/geometry.html
@@ -23,199 +23,241 @@ import java.util.ArrayList;
  * MultiPolygon         Polygon
  * Feature              Feature
  * FeatureCollection    (Array of Feature)
+ * GeometryCollection   (Array of Geometry)
  */
 public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
-    static final String ESRIJSON_ERROR_PREFIX = "Error while parsing Esri JSON: ";
+    private static final String DECODE_ERROR_PREFIX = "Error while parsing Esri JSON: ";
 
-    @Override
-    public String encode(BaseGeometry geo) {
-        switch (geo.getType()) {
-            case POINT:
-                return encodePoint((Point)geo);
-            case MULTIPOINT:
-                return encodeMultiPoint((MultiPoint)geo);
-            case LINESTRING:
-                return encodeLineString((LineString) geo);
-            case MULTILINESTRING:
-                return encodeMultiLineString((MultiLineString) geo);
-            case POLYGON:
-                return encodePolygon((Polygon)geo);
-            case MULTIPOLYGON:
-                return encodePolygon((MultiPolygon)geo);
-            case GEOMETRYCOLLECTION:
-                return encodeGeometryCollection((GeometryCollection) geo);
-            case FEATURE:
-                return encodeFeature((Feature)geo);
-            case FEATURECOLLECTION:
-                return encodeFeatureCollection((FeatureCollection) geo);
+    private JsonObject spatialReference;
 
-            default:
-                //TODO: error out
-                return null;
-        }
+    public EsriJson() {
+        JsonObject sr = new JsonObject();
+        sr.add("wkid", new JsonPrimitive(4326));
+        spatialReference = sr;
+    }
+
+    public EsriJson(JsonObject spatialReference) {
+        this.spatialReference = spatialReference;
     }
 
     @Override
     public BaseGeometry decode(String s) throws TerraformerException {
-        return decode(Terraformer.getObject(s, ESRIJSON_ERROR_PREFIX));
+        return geometryFromJson(Terraformer.getObject(s, DECODE_ERROR_PREFIX));
     }
 
-    public static BaseGeometry decode(JsonObject g) throws TerraformerException {
+    @Override
+    public String encode(BaseGeometry geo) {
+        return geometryToJson(geo).toString();
+    }
+
+    /** Create a Geometry from Json */
+    private static BaseGeometry geometryFromJson(JsonObject g) throws TerraformerException {
+        // infer type from keys present in g, then defer to the appropriate method.
         if (isPoint(g)) {
-            return pointFromJsonObject(g);
+            return pointFromJson(g);
         } else if (isMultiPoint(g)) {
-            return multiPointFromJsonObject(g);
+            return multiPointFromJson(g);
         } else if (isPolyline(g)) {
-            return polyLineFromJsonObject(g);
+            return polyLineFromJson(g);
         } else if (isPolygon(g)) {
-            return polygonFromJsonObject(g);
+            return polygonFromJson(g);
         } else if (isFeature(g)) {
-            return featureFromJsonObject(g);
+            return featureFromJson(g);
         } else {
-            // TODO: throw exception
-            return null;
+            throw new TerraformerException(DECODE_ERROR_PREFIX, "Unable to determine geometry type.");
         }
+    }
+
+    /** Encode a Geometry to Esri JSON */
+    private JsonElement geometryToJson(BaseGeometry geo) {
+        JsonElement json;
+        switch (geo.getType()) {
+            case POINT:
+                json = pointToJson((Point) geo);
+                break;
+            case MULTIPOINT:
+                json = multiPointToJson((MultiPoint) geo);
+                break;
+            case LINESTRING:
+                json = lineStringToJson((LineString) geo);
+                break;
+            case MULTILINESTRING:
+                json = multiLineStringToJson((MultiLineString) geo);
+                break;
+            case POLYGON:
+                json = polygonToJson((Polygon) geo);
+                break;
+            case MULTIPOLYGON:
+                json = multiPolygonToJson((MultiPolygon) geo);
+                break;
+            case GEOMETRYCOLLECTION:
+                json = geometryCollectionToJson((GeometryCollection) geo);
+                break;
+            case FEATURE:
+                json = featureToJson((Feature) geo);
+                break;
+            case FEATURECOLLECTION:
+                json = featureCollectionToJson((FeatureCollection) geo);
+                break;
+            default:
+                json = new JsonObject();
+        }
+        return json;
     }
 
     /* --- Encode EsriJSON --- */
 
-    public String encodePoint(Point p) {
+    /** Encode a Point to Esri JSON */
+    private JsonObject pointToJson(Point p) {
         JsonObject o = new JsonObject();
 
+        o.add("spatialReference", spatialReference);
         o.addProperty("x", p.getX());
         o.addProperty("y", p.getY());
-        if (p.size() > 2) { o.addProperty("z", p.getZ()); }
-        if (p.size() > 3) { o.addProperty("m", p.get(3)); }
+        if (p.size() > 2) {
+            o.addProperty("z", p.getZ());
+            o.addProperty("hasZ", true);
+        }
+        if (p.size() > 3) {
+            o.addProperty("m", p.get(3));
+            o.addProperty("hasM", true);
+        }
 
-        return o.toString();
+        return o;
     }
 
-    private String encodeMultiPoint(MultiPoint mp) {
+    /** Encode a MultiPoint to Esri JSON */
+    private JsonObject multiPointToJson(MultiPoint mp) {
         JsonObject o = makeJsonObject(mp.get(0).size());
 
         JsonArray points = new JsonArray();
         for (Point p : mp) {
-            points.add(pointToCoordinates(p));
+            points.add(pointToArray(p));
         }
         o.add("points", points);
 
-        return o.toString();
+        return o;
     }
 
-    private String encodeLineString(LineString ls) {
-        return encodeMultiLineString(new MultiLineString(ls));
+    /**
+     * Encode a LineString to Esri JSON.
+     * LineStrings and MultiLineStrings have identical representation in Esri JSON.
+     */
+    private JsonObject lineStringToJson(LineString ls) {
+        return multiLineStringToJson(new MultiLineString(ls));
     }
 
-    private String encodeMultiLineString(MultiLineString mls) {
+    /**
+     * Encode a MultiLineString to Esri JSON
+     * LineStrings and MultiLineStrings have identical representation in Esri JSON.
+     */
+    private JsonObject multiLineStringToJson(MultiLineString mls) {
         JsonObject o = makeJsonObject(mls.get(0).get(0).size());
 
         JsonArray paths = new JsonArray();
         for (LineString ls : mls) {
             JsonArray points = new JsonArray();
             for (Point p : ls) {
-                points.add(pointToCoordinates(p));
+                points.add(pointToArray(p));
             }
             paths.add(points);
         }
         o.add("paths", paths);
 
-        return o.toString();
+        return o;
     }
 
-    private String encodePolygon(Polygon p) {
-        return encodePolygon(new MultiPolygon(p));
+    /**
+     * Encode a Polygon to Esri JSON.
+     * Polygons and MultiPolygons have identical representation in Esri JSON.
+     */
+    private JsonObject polygonToJson(Polygon p) {
+        return multiPolygonToJson(new MultiPolygon(p));
     }
 
-    private String encodePolygon(MultiPolygon mp) {
-        return "TODO";
-    }
+    /**
+     * Encode a MultiPolygon to Esri JSON.
+     * Polygons and MultiPolygons have identical representation in Esri JSON.
+     */
+    private JsonObject multiPolygonToJson(MultiPolygon mp) {
+        JsonObject o = makeJsonObject(mp.get(0).getOuterRing().get(0).size());
 
-    private String encodeGeometryCollection(GeometryCollection gc) {
-        return "TODO";
-    }
-
-    private String encodeFeature(Feature f) {
-        return "TODO";
-    }
-
-    private String encodeFeatureCollection(FeatureCollection fc) {
-        return "TODO";
-    }
-
-    private JsonObject makeJsonObject(Integer numCoords) {
-        JsonObject o = new JsonObject();
-
-        if (numCoords != null) {
-            o.addProperty("hasZ", numCoords > 2);
-            o.addProperty("hasM", numCoords > 3);
+        JsonArray rings = new JsonArray();
+        for (Polygon p : mp) {
+            // add oriented rings from all polygons in the multipolygon to the array
+            rings.addAll(polygonToOrientedRings(p));
         }
+        o.add("rings", rings);
 
         return o;
     }
 
-    private JsonArray pointToCoordinates(Point p) {
-        JsonArray r = new JsonArray();
-        for (Double d : p) {
-            r.add(new JsonPrimitive(d));
+    /**
+     * Encode a GeometryCollection to Esri JSON.
+     * Since there is no GeometryCollection type in Esri JSON, this method will return an array of
+     * serialized geometries.
+     */
+    private JsonArray geometryCollectionToJson(GeometryCollection gc) {
+        JsonArray collection = new JsonArray();
+
+        for (Geometry g : gc) {
+            collection.add(geometryToJson(g));
         }
-        return r;
+
+        return collection;
+    }
+
+    /** Encode a Feature to Esri JSON */
+    private JsonObject featureToJson(Feature f) {
+        JsonObject o = new JsonObject();
+
+        o.add("geometry", geometryToJson(f.getGeometry()));
+        o.add("attributes", f.getProperties());
+
+        return o;
+    }
+
+    /** Encode a FeatureCollection to Esri JSON */
+    private JsonArray featureCollectionToJson(FeatureCollection fc) {
+        JsonArray collection = new JsonArray();
+
+        for (Feature f : fc) {
+            collection.add(featureToJson(f));
+        }
+
+        return collection;
     }
 
     /* --- Decode EsriJSON --- */
 
-    public static Point decodePoint(String pointJSON) throws TerraformerException {
-        if (Terraformer.isEmpty(pointJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        String ep = Point.ERROR_PREFIX;
-
-        JsonObject object = Terraformer.getObject(pointJSON, ep);
-        if (!isPoint(object)) {
-            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "Point");
-        }
-
-        return pointFromJsonObject(object);
-    }
-
-    static Point pointFromJsonObject(JsonObject g) throws TerraformerException {
+    private static Point pointFromJson(JsonObject g) throws TerraformerException {
         ArrayList<Double> coords = new ArrayList<Double>();
 
-        coords.add(g.get("x").getAsDouble());
-        coords.add(g.get("y").getAsDouble());
+        try {
+            coords.add(g.get("x").getAsDouble());
+            coords.add(g.get("y").getAsDouble());
 
-        boolean hasZ = g.get("hasZ").getAsBoolean();
-        if (hasZ) {
-            coords.add(g.get("z").getAsDouble());
-        }
+            boolean hasZ = g.has("hasZ") && g.get("hasZ").getAsBoolean();
+            boolean hasM = g.has("hasM") && g.get("hasM").getAsBoolean();
 
-        boolean hasM = g.get("hasM").getAsBoolean();
-        if (hasM) {
-            if (!hasZ) {
-                coords.add(0.0); // z = null
+            if (hasZ) {
+                coords.add(g.get("z").getAsDouble());
             }
-            coords.add(g.get("m").getAsDouble());
+
+            if (hasM) {
+                if (!hasZ) {
+                    coords.add(0.0); // z = null
+                }
+                coords.add(g.get("m").getAsDouble());
+            }
+        } catch (RuntimeException e) {
+            throw new TerraformerException(DECODE_ERROR_PREFIX, "Unable to decode point.");
         }
 
         return new Point(coords);
     }
 
-    public static MultiPoint decodeMultiPoint(String multiPointJSON) throws TerraformerException {
-        if (Terraformer.isEmpty(multiPointJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        String ep = MultiPoint.ERROR_PREFIX;
-
-        JsonObject object = Terraformer.getObject(multiPointJSON, ep);
-        if (!isMultiPoint(object)) {
-            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "MultiPoint");
-        }
-
-        return multiPointFromJsonObject(object);
-    }
-
-    static MultiPoint multiPointFromJsonObject(JsonObject g) {
+    private static MultiPoint multiPointFromJson(JsonObject g) {
         ArrayList<Point> points = new ArrayList<Point>();
 
         for (JsonElement p : g.getAsJsonArray("points")) {
@@ -225,22 +267,8 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return new MultiPoint(points);
     }
 
-    public static Geometry decodePolyLine(String polyLineJSON) throws TerraformerException {
-        if (Terraformer.isEmpty(polyLineJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
 
-        String ep = LineString.ERROR_PREFIX;
-
-        JsonObject object = Terraformer.getObject(polyLineJSON, ep);
-        if (!isPolyline(object)) {
-            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "LineString or MultiLineString");
-        }
-
-        return polyLineFromJsonObject(object);
-    }
-
-    static Geometry polyLineFromJsonObject(JsonObject g) {
+    private static Geometry polyLineFromJson(JsonObject g) {
         MultiLineString mls = new MultiLineString();
 
         for (JsonElement path : g.getAsJsonArray("paths")) {
@@ -258,22 +286,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return mls;
     }
 
-    public static Geometry decodePolygon(String polygonJSON) throws TerraformerException {
-        if (Terraformer.isEmpty(polygonJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        String ep = Polygon.ERROR_PREFIX;
-
-        JsonObject object = Terraformer.getObject(polygonJSON, ep);
-        if (!isPolygon(object)) {
-            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "Polygon or MultiPolygon");
-        }
-
-        return polygonFromJsonObject(object);
-    }
-
-    static Geometry polygonFromJsonObject(JsonObject g) {
+    private static Geometry polygonFromJson(JsonObject g) {
         MultiPolygon outerRings = new MultiPolygon();
         MultiLineString holes = new MultiLineString();
 
@@ -326,6 +339,130 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         }
     }
 
+    private static Feature featureFromJson(JsonObject g) throws TerraformerException {
+        Geometry geometry;
+        try {
+            geometry = (Geometry) geometryFromJson(g.get("geometry").getAsJsonObject());
+        } catch (TerraformerException e) {
+            throw new TerraformerException("Error decoding EsriJSON feature", "Unable to parse 'geometry'.");
+        }
+
+        JsonObject attributes = g.get("attributes").getAsJsonObject();
+
+        return new Feature(geometry, attributes);
+    }
+
+    /* --- Helpers --- */
+
+    private JsonObject makeJsonObject(Integer numCoords) {
+        JsonObject o = new JsonObject();
+
+        if (numCoords != null) {
+            o.addProperty("hasZ", numCoords > 2);
+            o.addProperty("hasM", numCoords > 3);
+        }
+
+        o.add("spatialReference", spatialReference);
+
+        return o;
+    }
+
+    private static JsonArray pointToArray(Point p) {
+        JsonArray r = new JsonArray();
+        for (double d : p) {
+            r.add((new JsonPrimitive(d)));
+        }
+        return r;
+    }
+
+    private static JsonArray polygonToOrientedRings(Polygon input) {
+        JsonArray rings = new JsonArray();
+
+        for (int i = 0; i < input.size(); i++) {
+            LineString r = input.get(i);
+
+            // ignore invalid rings
+            if (r.size() < 4) {
+                continue;
+            }
+
+            // orient rings
+            if (i == 0 && !ringIsClockwise(r)) {
+                // make outer ring clockwise
+                r.reverse();
+            } else if (ringIsClockwise(r)) {
+                // make holes counter clockwise
+                r.reverse();
+            }
+
+            JsonArray ring = new JsonArray();
+            for (Point p : r) {
+                ring.add(pointToArray(p));
+            }
+            rings.add(ring);
+        }
+
+        return rings;
+    }
+
+    // TODO: make sure everything has 'hasZ' and 'hasM'
+    private static Point pointFromCoordinates(JsonObject g, JsonElement array) {
+        JsonArray r = array.getAsJsonArray();
+
+        ArrayList<Double> coords = new ArrayList<Double>();
+        coords.add(r.get(0).getAsDouble());
+        coords.add(r.get(1).getAsDouble());
+
+        boolean hasZ = g.has("hasZ") && g.get("hasZ").getAsBoolean();
+        boolean hasM = g.has("hasM") && g.get("hasM").getAsBoolean();
+
+        if (hasZ) {
+            coords.add(r.get(2).getAsDouble());
+        }
+
+        if (hasM) {
+            if (!hasZ) {
+                coords.add(0.0); // z = null
+                coords.add(r.get(2).getAsDouble());
+            } else {
+                coords.add(r.get(3).getAsDouble());
+            }
+        }
+
+        return new Point(coords);
+    }
+
+    private static boolean ringIsClockwise(LineString ring) {
+        int total = 0;
+        Point p1, p2;
+        p1 = ring.get(0);
+        for (int i = 0; i < ring.size()-1; i++) {
+            p2 = ring.get(i+1);
+            total += (p2.get(0) - p1.get(0)) * (p2.get(1) + p1.get(1));
+            p1 = p2;
+        }
+        return (total >= 0);
+    }
+
+    private static boolean ringContainsPoint(LineString ring, Point p) {
+        if (ring == null || p == null) {
+            return false;
+        }
+
+        boolean returnVal = false;
+        int l = ring.size();
+        int j = l - 1;
+        for (int i = -1; ++i < l; j = i) {
+            if (((ring.get(i).get(1) <= p.get(1) && p.get(1) < ring.get(j).get(1)) ||
+                 (ring.get(j).get(1) <= p.get(1) && p.get(1) < ring.get(i).get(1))) &&
+                (p.get(0) < (ring.get(j).get(0) - ring.get(i).get(0)) * (p.get(1) - ring.get(i).get(1)) / (ring.get(j).get(1) - ring.get(i).get(1)) + ring.get(i).get(0))) {
+                returnVal = !returnVal;
+            }
+        }
+
+        return returnVal;
+    }
+
     private static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
         boolean intersects = lineStringsIntersect(outer, inner);
         boolean contains = ringContainsPoint(outer, inner.get(0));
@@ -339,24 +476,6 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
                 if (lineLineIntersect(a.get(i), a.get(i + 1), b.get(j), b.get(j + 1))) {
                     return true;
                 }
-            }
-        }
-        return false;
-    }
-
-    private static boolean lineStringsIntersect(MultiLineString a, LineString b) {
-        for (LineString l : a) {
-            if (lineStringsIntersect(l, b)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean lineStringsIntersect(LineString a, MultiLineString b) {
-        for (LineString l : b) {
-            if (lineStringsIntersect(a, l)) {
-                return true;
             }
         }
         return false;
@@ -389,164 +508,29 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return false;
     }
 
-    public static Feature decodeFeature(String featureJSON) throws TerraformerException {
-        if (Terraformer.isEmpty(featureJSON)) {
-            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
-        }
-
-        String ep = Feature.ERROR_PREFIX;
-
-        JsonObject object = Terraformer.getObject(featureJSON, ep);
-        if (!isFeature(object)) {
-            throw new TerraformerException(ep, TerraformerException.NOT_OF_TYPE + "Feature");
-        }
-
-        return featureFromJsonObject(object);
-    }
-
-    static Feature featureFromJsonObject(JsonObject g) throws TerraformerException {
-        Geometry geometry = null;
-        try {
-            geometry = (Geometry) decode(g.get("geometry").getAsJsonObject());
-        } catch (TerraformerException e) {
-            throw new TerraformerException("Error decoding EsriJSON feature", "Unable to parse 'geometry'.");
-        }
-
-        JsonObject attributes = g.get("attributes").getAsJsonObject();
-
-        return new Feature(geometry, attributes);
-    }
-
-    // TODO: make sure everything has 'hasZ' and 'hasM'
-    static Point pointFromCoordinates(JsonObject g, JsonElement array) {
-        JsonArray r = array.getAsJsonArray();
-
-        ArrayList<Double> coords = new ArrayList<Double>();
-        coords.add(r.get(0).getAsDouble());
-        coords.add(r.get(1).getAsDouble());
-
-        boolean hasZ = g.get("hasZ").getAsBoolean();
-        if (hasZ) {
-            coords.add(r.get(2).getAsDouble());
-        }
-
-        if (g.get("hasM").getAsBoolean()) {
-            if (!hasZ) {
-                coords.add(0.0); // z = null
-            }
-            coords.add(r.get(3).getAsDouble());
-        }
-
-        return new Point(coords);
-    }
-
-    /**
-     * Ensures that rings are oriented in the right directions.
-     * Outer rings must be clockwise, holes counterclockwise.
-     * @param input
-     * @return
-     */
-    static Polygon orientRings(Polygon input) {
-        Polygon output = new Polygon();
-
-        LineString outerRing = input.getOuterRing();
-        if (outerRing.size() >= 4) {
-            if (!ringIsClockwise(outerRing)) {
-                outerRing.reverse();
-            }
-        }
-
-        output.add(outerRing);
-
-        for (LineString hole : input.getHoles()) {
-            hole.closeRing();
-            if (hole.size() >= 4) {
-                if (ringIsClockwise(hole)) {
-                    hole.reverse();
-                }
-                output.add(hole);
-            }
-        }
-
-        return output;
-    }
-
-    static boolean ringIsClockwise(LineString ring) {
-        int total = 0;
-        Point p1, p2;
-        p1 = ring.get(0);
-        for (int i = 0; i < ring.size()-1; i++) {
-            p2 = ring.get(i+1);
-            total += (p2.get(0) - p1.get(0)) * (p2.get(1) + p1.get(1));
-            p1 = p2;
-        }
-        return (total >= 0);
-    }
-
-    static boolean polygonContainsPoint(Polygon pg, Point p) {
-        if (pg == null || p == null) {
-            return false;
-        }
-
-        if (pg.size() == 1) {
-            return ringContainsPoint(pg.get(0), p);
-        }
-
-        if (ringContainsPoint(pg.get(0), p)) {
-            for (int i = 1; i < pg.size(); i++) {
-                if (ringContainsPoint(pg.get(i), p)) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    static boolean ringContainsPoint(LineString ring, Point p) {
-        if (ring == null || p == null) {
-            return false;
-        }
-
-        boolean returnVal = false;
-        int l = ring.size();
-        int j = l - 1;
-        for (int i = -1; ++i < l; j = i) {
-            if (((ring.get(i).get(1) <= p.get(1) && p.get(1) < ring.get(j).get(1)) ||
-                    (ring.get(j).get(1) <= p.get(1) && p.get(1) < ring.get(i).get(1))) &&
-                    (p.get(0) < (ring.get(j).get(0) - ring.get(i).get(0)) * (p.get(1) - ring.get(i).get(1)) / (ring.get(j).get(1) - ring.get(i).get(1)) + ring.get(i).get(0))) {
-                returnVal = !returnVal;
-            }
-        }
-
-        return returnVal;
-    }
-
     /* --- Type Detection --- */
 
-    static boolean isPoint(JsonObject g) {
-        return hasAllKeys(g, "x", "y");
+    private static boolean isPoint(JsonObject g) {
+        return hasAll(g, "x", "y");
     }
 
-    static boolean isMultiPoint(JsonObject g) {
+    private static boolean isMultiPoint(JsonObject g) {
         return g.has("points");
     }
 
-    static boolean isPolyline(JsonObject g) {
+    private static boolean isPolyline(JsonObject g) {
         return g.has("paths");
     }
 
-    static boolean isPolygon(JsonObject g) {
+    private static boolean isPolygon(JsonObject g) {
         return g.has("rings");
     }
 
-    static boolean isFeature(JsonObject g) {
-        return hasAllKeys(g, "geometry", "attributes");
+    private static boolean isFeature(JsonObject g) {
+        return hasAll(g, "geometry", "attributes");
     }
 
-    static boolean hasAllKeys(JsonObject g, String... keys) {
+    private static boolean hasAll(JsonObject g, String... keys) {
         boolean hasAll = true;
         for (String k : keys) {
             if (!g.has(k)) {
