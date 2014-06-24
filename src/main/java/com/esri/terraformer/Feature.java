@@ -12,6 +12,7 @@ public class Feature extends BaseGeometry<Geometry<?>> {
     static final String ERROR_PREFIX = "Error while parsing Feature: ";
 
     private JsonObject mProperties = new JsonObject();
+    private String mId = null;
 
     /**
      * A valid Feature contains 0 or exactly 1 {@link Geometry}. It may also optionally contain a "properties" object.
@@ -72,6 +73,11 @@ public class Feature extends BaseGeometry<Geometry<?>> {
     public Feature(Geometry<?> geometry, JsonObject properties) {
         add(geometry);
         mProperties = properties;
+    }
+
+    public Feature(String id, Geometry<?> geometry, JsonObject properties) {
+        this(geometry, properties);
+        mId = id;
     }
 
     /**
@@ -257,6 +263,16 @@ public class Feature extends BaseGeometry<Geometry<?>> {
      */
     public void setProperties(JsonObject properties) {
         mProperties = properties;
+    }
+
+    /** Set the unique identifier for this Feature. */
+    public void setId(String id) {
+        mId = id;
+    }
+
+    /** Get the identifier for this Feature. */
+    public String getId() {
+        return mId;
     }
 
     @Override
