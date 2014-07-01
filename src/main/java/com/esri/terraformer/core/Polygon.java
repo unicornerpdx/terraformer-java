@@ -47,7 +47,7 @@ public final class Polygon extends Geometry<LineString> {
     }
 
     public List<LineString> getHoles() {
-        return size() > 1 ? subList(1, size()-1) : new ArrayList<LineString>();
+        return size() > 1 ? subList(1, size()) : new ArrayList<LineString>();
     }
 
     @Override
