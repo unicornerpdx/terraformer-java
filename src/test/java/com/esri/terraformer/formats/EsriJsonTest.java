@@ -293,8 +293,4 @@ public class EsriJsonTest {
         FeatureCollection f = new FeatureCollection(new Feature(new Point(0d,0d)), new Feature(new Point(1d,1d)));
         assertEquals(e.encode(f), "[{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{}},{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":1.0},\"attributes\":{}}]");
     }
-
-    @Test public void testRingIsClockwise() throws Exception {
-        EsriJson esriJson = new EsriJson();
-    }
 }
