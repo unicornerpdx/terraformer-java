@@ -95,7 +95,7 @@ public class EsriJsonTest {
         Polygon p = (Polygon) e.decode("{\"rings\":[[[100,0],[100,4],[104,4],[104,0],[100,0]],[[101,0.5],[103,0.5],[103,1],[101,1],[101,0.5]],[[101,3],[103,3],[103,3.5],[101,3.5],[101,3]]],\"spatialReference\":{\"wkid\":4326}}");
         assertTrue(p.getOuterRing().isLinearRing());
         assertEquals(p.getOuterRing().size(), 5);
-        assertEquals(p.getHoles().size(), 1);
+        assertEquals(p.getHoles().size(), 2);
 
         Polygon p3D = (Polygon) e.decode("{\"hasZ\":true,\"hasM\":true,\"rings\":[[[1,1,1,1],[2,2,2,2],[3,3,3,3],[4,4,4,4],[1,1,1,1]]]}");
         assertTrue(p3D.getOuterRing().isLinearRing());
@@ -106,6 +106,10 @@ public class EsriJsonTest {
         assertEquals(p3D.getOuterRing().get(2), new Point(3d,3d,3d,3d));
         assertEquals(p3D.getOuterRing().get(3), new Point(4d,4d,4d,4d));
         assertEquals(p3D.getOuterRing().get(4), new Point(1d,1d,1d,1d));
+
+        Polygon moreHoleThanPolyReally = (Polygon) e.decode("{\"rings\":[[[0,0],[0,1],[1,1],[1,0],[0,0]],[[0.1,0.1],[0.9,0.1],[0.9,0.9],[0.1,0.9],[0.1,0.1]]]}");
+        assertEquals(moreHoleThanPolyReally.getOuterRing().size(), 5);
+        assertEquals(moreHoleThanPolyReally.getHoles().size(), 1);
 
         MultiPolygon mp = (MultiPolygon) e.decode("{\"rings\":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],[-122.64,45.49],[-122.63,45.52],[-122.63,45.52]],[[-83,35],[-74,35],[-74,41],[-83,41],[-83,35]]]}");
         assertEquals(mp.size(), 2);
@@ -288,5 +292,9 @@ public class EsriJsonTest {
     public void testEncodeFeatureCollection() throws Exception {
         FeatureCollection f = new FeatureCollection(new Feature(new Point(0d,0d)), new Feature(new Point(1d,1d)));
         assertEquals(e.encode(f), "[{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{}},{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":1.0},\"attributes\":{}}]");
+    }
+
+    @Test public void testRingIsClockwise() throws Exception {
+        EsriJson esriJson = new EsriJson();
     }
 }
