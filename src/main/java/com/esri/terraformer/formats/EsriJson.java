@@ -483,8 +483,12 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return new Point(coords);
     }
 
+    /**
+     * Determines whether or not the direction of the coordinates in a ring is clockwise using the Shoelace Formula.
+     * http://en.wikipedia.org/wiki/Shoelace_formula
+     **/
     private static boolean ringIsClockwise(LineString ring) {
-        int total = 0;
+        double total = 0;
         Point p1, p2;
         p1 = ring.get(0);
         for (int i = 0; i < ring.size()-1; i++) {
