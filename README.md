@@ -34,11 +34,8 @@ t.setEnocder(new GeoJson());
 
 String esriJson = "{\"x\":100.0,\"y\":100.0}";
 
-// Decode Esri JSON into a Terraformer Point
-Point p = t.decode(esriJson);
-
-// Encode the Terraformer Point as GeoJSON
-String geoJson = t.encode(p);
+// Convert the Esri JSON string to GeoJSON
+String geoJson = t.convert(esriJson);
 ```
 
 ### Converting GeoJSON to EsriJSON
@@ -53,11 +50,8 @@ t.setEncoder(new EsriJson());
 
 String geoJson = "{\"type\":\"Point\",\"coordinates\":[100.0,100.0]}";
 
-// Decode GeoJSON into a Terraformer Point
-Point p = t.decode(geoJson);
-
-// Encode the Terrformer Point as Esri JSON
-String esriJson = t.encode(p);
+// Convert the GeoJSON string to Esri JSON
+String esriJson = t.convert(geoJson);
 ```
 
 ## Resources
