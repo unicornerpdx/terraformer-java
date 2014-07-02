@@ -22,6 +22,44 @@ Check out the getting [started guide](http://terraformer.io/getting-started/) wh
 
 Check out the full documentation on the [Terraformer website](http://terraformer.io/core/) and the [getting started guide](http://terraformer.io/getting-started/).
 
+### Converting Esri JSON to GeoJSON
+
+```java
+// Instantiate a Terraformer
+Terraformer t = new Terraformer();
+
+// Set the decoder and encoder
+t.setDecoder(new EsriJson());
+t.setEnocder(new GeoJson());
+
+String esriJson = "{\"x\":100.0,\"y\":100.0}";
+
+// Decode Esri JSON into a Terraformer Point
+Point p = t.decode(esriJson);
+
+// Encode the Terraformer Point as GeoJSON
+String geoJson = t.encode(p);
+```
+
+### Converting GeoJSON to EsriJSON
+
+```java
+// Instantiate a Terraformer
+Terraformer t = new Terraformer();
+
+// Set the decoder and encoder
+t.setDecoder(new GeoJson());
+t.setEncoder(new EsriJson());
+
+String geoJson = "{\"type\":\"Point\",\"coordinates\":[100.0,100.0]}";
+
+// Decode GeoJSON into a Terraformer Point
+Point p = t.decode(geoJson);
+
+// Encode the Terrformer Point as Esri JSON
+String esriJson = t.encode(p);
+```
+
 ## Resources
 
 * [Terraformer Website](http://terraformer.io)
