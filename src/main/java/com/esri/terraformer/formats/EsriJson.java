@@ -498,30 +498,40 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return (total >= 0);
     }
 
-    private static boolean ringContainsPoint(LineString ring, Point p) {
+    static boolean ringContainsPoint(LineString ring, Point p) {
         if (ring == null || p == null) {
             return false;
         }
 
-        boolean returnVal = false;
-        int l = ring.size();
-        int j = l - 1;
-        for (int i = -1; ++i < l; j = i) {
-            double ring_i_x = ring.get(i).getX();
-            double ring_i_y = ring.get(i).getY();
-            double ring_j_x = ring.get(j).getX();
-            double ring_j_y = ring.get(j).getY();
-            double point_x = p.getX();
-            double point_y = p.getY();
+        // Ray casting algorithm to determine if the point is inside the
+        // ring. For each segment with the coordinates a and b, check to see if
+        // point.y is within a.y and b.y. If so, check to see if the point is
+        // to the left of the edge. If this is also true, a line drawn from the
+        // point to the right will intersect the edge-- if the line intersects
+        // the polygon an odd number of times, it is inside.
 
-            if (((ring_i_y <= point_y && point_y < ring_j_y) ||
-                 (ring_j_y <= point_y && point_y < ring_i_y)) &&
-                (point_x < (ring_j_x - ring_i_x) * (point_y - ring_i_y) / (ring_j_y - ring_i_y) + ring_i_x)) {
-                returnVal = !returnVal;
+        // If an edge is horizontal it will not pass the checkY test. This is
+        // important, since otherwise you run the risk of dividing by zero in
+        // the horizontal check.
+
+        // This stackoverflow answer explains it nicely: http://stackoverflow.com/a/218081/52561
+        // This is good too: http://geomalgorithms.com/a03-_inclusion.html
+
+        boolean contains = false;
+        int nvert = ring.size();
+        for (int i = 0, j = nvert - 1; i < nvert; j = i++) {
+            Point a = ring.get(i);
+            Point b = ring.get(j);
+
+            boolean checkY = ((a.getY() >= p.getY()) != (b.getY() >= p.getY()));
+            boolean checkX = (p.getX() <= (b.getX() - a.getX()) * (p.getY() - a.getY()) / (b.getY() - a.getY()) + a.getX());
+
+            if (checkY && checkX) {
+                contains = !contains;
             }
         }
 
-        return returnVal;
+        return contains;
     }
 
     static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
