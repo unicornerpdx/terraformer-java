@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class EsriJsonTest {
@@ -286,5 +287,20 @@ public class EsriJsonTest {
     public void testEncodeFeatureCollection() throws Exception {
         FeatureCollection f = new FeatureCollection(new Feature(new Point(0d,0d)), new Feature(new Point(1d,1d)));
         assertEquals(e.encode(f), "[{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{}},{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":1.0},\"attributes\":{}}]");
+    }
+
+    @Test
+    public void testRingContainsPoint() throws Exception {
+        LineString ring = new LineString(
+                new Point(-10d, -10d),
+                new Point(-10d, 10d),
+                new Point(10d, 10d),
+                new Point(10d, -10d),
+                new Point(-10d, -10d));
+        Point center = new Point(0d, 0d);
+        Point outside = new Point(100d, 100d);
+
+        assertTrue(EsriJson.ringContainsPoint(ring, center));
+        assertFalse(EsriJson.ringContainsPoint(ring, outside));
     }
 }
