@@ -1,6 +1,7 @@
 package com.esri.terraformer.core;
 
 import com.esri.terraformer.formats.FormatUtils;
+import com.esri.terraformer.formats.GeoJson;
 import com.esri.terraformer.formats.GeoJsonTest;
 import com.google.gson.JsonElement;
 import org.junit.Test;
@@ -99,5 +100,15 @@ public class TerraformerTest {
         assertEquals(true, FormatUtils.isEmpty(null));
         assertEquals(true, FormatUtils.isEmpty(""));
         assertEquals(false, FormatUtils.isEmpty("derp"));
+    }
+
+    @Test
+    public void testConvert() throws Exception {
+        Terraformer t = new Terraformer(new GeoJson(), new GeoJson());
+
+        String in = "{\"type\":\"Point\",\"coordinates\":[10.0,10.0]}";
+        String out = t.convert(in);
+
+        assertEquals(in, out);
     }
 }

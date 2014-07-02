@@ -1,17 +1,8 @@
 package com.esri.terraformer.core;
 
-import com.esri.terraformer.formats.GeoJson;
-
 public final class Terraformer {
-    static Encoder encoder;
-    static Decoder decoder;
-
-    // use GeoJson by default
-    static {
-        GeoJson gj = new GeoJson();
-        encoder = gj;
-        decoder = gj;
-    }
+    private Encoder encoder;
+    private Decoder decoder;
 
     public interface Decoder {
         public BaseGeometry decode(String in) throws TerraformerException;
@@ -21,27 +12,46 @@ public final class Terraformer {
         public String encode(BaseGeometry geo);
     }
 
-    public static Encoder getEncoder() {
-        return encoder;
+    public Terraformer() { }
+
+    public Terraformer(Decoder decoder, Encoder encoder) {
+        this.decoder = decoder;
+        this.encoder = encoder;
     }
 
-    public static void setEncoder(Encoder encoder) {
-        Terraformer.encoder = encoder;
+    public Encoder getEncoder() {
+        return this.encoder;
     }
 
-    public static Decoder getDecoder() {
-        return decoder;
+    public void setEncoder(Encoder encoder) {
+        this.encoder = encoder;
     }
 
-    public static void setDecoder(Decoder decoder) {
-        Terraformer.decoder = decoder;
+    public Decoder getDecoder() {
+        return this.decoder;
     }
 
-    public BaseGeometry decode(String in) throws TerraformerException {
+    public void setDecoder(Decoder decoder) {
+        this.decoder = decoder;
+    }
+
+    public BaseGeometry decode(String input) throws TerraformerException {
         if (decoder != null) {
-            return decoder.decode(in);
+            return decoder.decode(input);
         }
 
         throw new TerraformerException("", "There is no active decoder available!");
+    }
+
+    public String encode(BaseGeometry geometry) throws TerraformerException {
+        if (encoder != null) {
+            return encoder.encode(geometry);
+        }
+
+        throw new TerraformerException("", "There is no active encoder available!");
+    }
+
+    public String convert(String input) throws TerraformerException {
+        return encode(decode(input));
     }
 }

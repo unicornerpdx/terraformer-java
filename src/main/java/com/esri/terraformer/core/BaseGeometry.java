@@ -44,19 +44,6 @@ public abstract class BaseGeometry<T> extends ArrayList<T> {
     public abstract boolean isEquivalentTo(BaseGeometry<?> obj);
 
     /**
-     * returns the String representation as determined by the current encoder set on the {@link Terraformer} class.
-     *
-     * @return
-     */
-    public String encode() {
-        if (Terraformer.encoder != null) {
-            return Terraformer.encoder.encode(this);
-        }
-
-        return null;
-    }
-
-    /**
      * Package private.
      *
      * @param obj1

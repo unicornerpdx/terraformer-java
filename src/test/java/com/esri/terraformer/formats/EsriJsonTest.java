@@ -10,10 +10,8 @@ import com.esri.terraformer.core.MultiPolygon;
 import com.esri.terraformer.core.Point;
 import com.esri.terraformer.core.Polygon;
 import com.esri.terraformer.core.Terraformer;
-import com.esri.terraformer.formats.EsriJson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -21,17 +19,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class EsriJsonTest {
-    EsriJson e;
+    static Terraformer e;
 
     @BeforeClass
     public static void setUpTerraformer() {
-        Terraformer.setEncoder(new EsriJson());
-        Terraformer.setDecoder(new EsriJson());
-    }
-
-    @Before
-    public void setUp() {
-        e = new EsriJson();
+        e = new Terraformer();
+        e.setEncoder(new EsriJson());
+        e.setDecoder(new EsriJson());
     }
 
     @Test

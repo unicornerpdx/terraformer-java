@@ -133,10 +133,13 @@ public class GeoJsonTest {
     public static final String COORDS_NOT_ARRAY_POINT = "{\"type\":\"Point\",\"coordinates\":\"horse\"}";
     public static final String COORDS_TOO_SHORT_POINT = "{\"type\":\"Point\",\"coordinates\":[100.0]}";
 
+    static Terraformer t;
+
     @BeforeClass
     public static void setUpTerraformer() {
-        Terraformer.setEncoder(new GeoJson());
-        Terraformer.setDecoder(new GeoJson());
+        t = new Terraformer();
+        t.setEncoder(new GeoJson());
+        t.setDecoder(new GeoJson());
     }
 
     @Test
@@ -292,9 +295,9 @@ public class GeoJsonTest {
     @Test
     public void testDecodeFeatureCollection() throws Exception {
         assertEquals(VALID_FEATURE_COLLECTION,
-                GeoJson.decodeFeatureCollection(VALID_FEATURE_COLLECTION).encode());
+                t.encode(GeoJson.decodeFeatureCollection(VALID_FEATURE_COLLECTION)));
         assertEquals(EMPTY_FEATURES_FEATURE_COLLECTION,
-                GeoJson.decodeFeatureCollection(EMPTY_FEATURES_FEATURE_COLLECTION).encode());
+                t.encode(GeoJson.decodeFeatureCollection(EMPTY_FEATURES_FEATURE_COLLECTION)));
 
         boolean gotException = false;
 
@@ -391,11 +394,11 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodeFeature() throws Exception {
-        assertEquals(MULTILINESTRING_FEATURE, GeoJson.decodeFeature(MULTILINESTRING_FEATURE).encode());
-        assertEquals(POLYGON_FEATURE, GeoJson.decodeFeature(POLYGON_FEATURE).encode());
-        assertEquals(MULTIPOLYGON_FEATURE, GeoJson.decodeFeature(MULTIPOLYGON_FEATURE).encode());
-        assertEquals(GEOMETRYCOLLECTION_FEATURE, GeoJson.decodeFeature(GEOMETRYCOLLECTION_FEATURE).encode());
-        assertEquals(EMPTY_GEOMETRY_FEATURE, GeoJson.decodeFeature(EMPTY_GEOMETRY_FEATURE).encode());
+        assertEquals(MULTILINESTRING_FEATURE, t.encode(GeoJson.decodeFeature(MULTILINESTRING_FEATURE)));
+        assertEquals(POLYGON_FEATURE, t.encode(GeoJson.decodeFeature(POLYGON_FEATURE)));
+        assertEquals(MULTIPOLYGON_FEATURE, t.encode(GeoJson.decodeFeature(MULTIPOLYGON_FEATURE)));
+        assertEquals(GEOMETRYCOLLECTION_FEATURE, t.encode(GeoJson.decodeFeature(GEOMETRYCOLLECTION_FEATURE)));
+        assertEquals(EMPTY_GEOMETRY_FEATURE, t.encode(GeoJson.decodeFeature(EMPTY_GEOMETRY_FEATURE)));
 
         boolean gotException = false;
 
@@ -474,9 +477,9 @@ public class GeoJsonTest {
     @Test
     public void testDecodeGeometryCollection() throws Exception {
         assertEquals(VALID_GEOMETRY_COLLECTION,
-                GeoJson.decodeGeometryCollection(VALID_GEOMETRY_COLLECTION).encode());
+                     t.encode(GeoJson.decodeGeometryCollection(VALID_GEOMETRY_COLLECTION)));
         assertEquals(EMPTY_GEOMETRIES_GEOMETRY_COLLECTION,
-                GeoJson.decodeGeometryCollection(EMPTY_GEOMETRIES_GEOMETRY_COLLECTION).encode());
+                     t.encode(GeoJson.decodeGeometryCollection(EMPTY_GEOMETRIES_GEOMETRY_COLLECTION)));
 
         boolean gotException = false;
 
@@ -542,8 +545,8 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodeMultiPolygon() throws Exception {
-        assertEquals(VALID_MULTI_POLYGON, GeoJson.decodeMultiPolygon(VALID_MULTI_POLYGON).encode());
-        assertEquals(EMPTY_COORDS_MULTI_POLYGON, GeoJson.decodeMultiPolygon(EMPTY_COORDS_MULTI_POLYGON).encode());
+        assertEquals(VALID_MULTI_POLYGON, t.encode(GeoJson.decodeMultiPolygon(VALID_MULTI_POLYGON)));
+        assertEquals(EMPTY_COORDS_MULTI_POLYGON, t.encode(GeoJson.decodeMultiPolygon(EMPTY_COORDS_MULTI_POLYGON)));
 
         boolean gotException = false;
 
@@ -609,8 +612,8 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodePolygon() throws Exception {
-        assertEquals(VALID_POLYGON, GeoJson.decodePolygon(VALID_POLYGON).encode());
-        assertEquals(EMPTY_COORDS_POLYGON, GeoJson.decodePolygon(EMPTY_COORDS_POLYGON).encode());
+        assertEquals(VALID_POLYGON, t.encode(GeoJson.decodePolygon(VALID_POLYGON)));
+        assertEquals(EMPTY_COORDS_POLYGON, t.encode(GeoJson.decodePolygon(EMPTY_COORDS_POLYGON)));
 
         boolean gotException = false;
 
@@ -676,8 +679,8 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodeMultiLineString() throws Exception {
-        assertEquals(VALID_MULTI_LINE_STRING, GeoJson.decodeMultiLineString(VALID_MULTI_LINE_STRING).encode());
-        assertEquals(EMPTY_COORDS_MULTI_LINE_STRING, GeoJson.decodeMultiLineString(EMPTY_COORDS_MULTI_LINE_STRING).encode());
+        assertEquals(VALID_MULTI_LINE_STRING, t.encode(GeoJson.decodeMultiLineString(VALID_MULTI_LINE_STRING)));
+        assertEquals(EMPTY_COORDS_MULTI_LINE_STRING, t.encode(GeoJson.decodeMultiLineString(EMPTY_COORDS_MULTI_LINE_STRING)));
 
         boolean gotException = false;
 
@@ -743,7 +746,7 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodeLineString() throws Exception {
-        assertEquals(VALID_LINE_STRING, GeoJson.decodeLineString(VALID_LINE_STRING).encode());
+        assertEquals(VALID_LINE_STRING, t.encode(GeoJson.decodeLineString(VALID_LINE_STRING)));
 
         boolean gotException = false;
 
@@ -819,7 +822,7 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodeMultiPoint() throws Exception {
-        assertEquals(VALID_MULTIPOINT, GeoJson.decodeMultiPoint(VALID_MULTIPOINT).encode());
+        assertEquals(VALID_MULTIPOINT, t.encode(GeoJson.decodeMultiPoint(VALID_MULTIPOINT)));
 
         boolean gotException = false;
 
@@ -895,7 +898,7 @@ public class GeoJsonTest {
 
     @Test
     public void testDecodePoint() throws Exception {
-        assertEquals(VALID_POINT, GeoJson.decodePoint(VALID_POINT).encode());
+        assertEquals(VALID_POINT, t.encode(GeoJson.decodePoint(VALID_POINT)));
 
         boolean gotException = false;
 
