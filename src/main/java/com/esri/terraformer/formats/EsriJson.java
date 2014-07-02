@@ -148,6 +148,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             default:
                 json = new JsonObject();
         }
+
         return json;
     }
 
@@ -157,17 +158,16 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     private JsonObject pointToJson(Point p) {
         JsonObject o = new JsonObject();
 
-        o.add(KEY_SPATIAL_REFERENCE, spatialReference);
         o.addProperty(KEY_X, p.getX());
         o.addProperty(KEY_Y, p.getY());
         if (p.size() > 2) {
             o.addProperty(KEY_Z, p.getZ());
-            o.addProperty(KEY_HAS_Z, true);
         }
         if (p.size() > 3) {
             o.addProperty(KEY_M, p.get(3));
-            o.addProperty(KEY_HAS_M, true);
         }
+
+        o.add(KEY_SPATIAL_REFERENCE, spatialReference);
 
         return o;
     }
@@ -287,15 +287,12 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             coords.add(g.get(KEY_X).getAsDouble());
             coords.add(g.get(KEY_Y).getAsDouble());
 
-            boolean hasZ = g.has(KEY_HAS_Z) && g.get(KEY_HAS_Z).getAsBoolean();
-            boolean hasM = g.has(KEY_HAS_M) && g.get(KEY_HAS_M).getAsBoolean();
-
-            if (hasZ) {
+            if (g.has(KEY_Z)) {
                 coords.add(g.get(KEY_Z).getAsDouble());
             }
 
-            if (hasM) {
-                if (!hasZ) {
+            if (g.has(KEY_M)) {
+                if (!g.has(KEY_Z)) {
                     coords.add(0.0); // z = null
                 }
                 coords.add(g.get(KEY_M).getAsDouble());
@@ -409,9 +406,11 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     private JsonObject makeJsonObject(Integer numCoords) {
         JsonObject o = new JsonObject();
 
-        if (numCoords != null) {
-            o.addProperty(KEY_HAS_Z, numCoords > 2);
-            o.addProperty(KEY_HAS_M, numCoords > 3);
+        if (numCoords != null && numCoords > 2) {
+            o.addProperty(KEY_HAS_Z, true);
+        }
+        if (numCoords != null && numCoords > 3) {
+            o.addProperty(KEY_HAS_M, true);
         }
 
         o.add(KEY_SPATIAL_REFERENCE, spatialReference);
@@ -525,7 +524,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return returnVal;
     }
 
-    private static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
+    static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
         boolean intersects = lineStringsIntersect(outer, inner);
         boolean contains = ringContainsPoint(outer, inner.get(0));
 

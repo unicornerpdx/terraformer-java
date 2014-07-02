@@ -123,13 +123,13 @@ public class EsriJsonTest {
     @Test
     public void testEncodePoint() throws Exception {
         Point p1 = new Point(1d, 2d);
-        assertEquals(e.encode(p1), "{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":2.0}");
+        assertEquals(e.encode(p1), "{\"x\":1.0,\"y\":2.0,\"spatialReference\":{\"wkid\":4326}}");
 
         Point p2 = new Point(1d, 2d, 3d);
-        assertEquals(e.encode(p2), "{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":2.0,\"z\":3.0,\"hasZ\":true}");
+        assertEquals(e.encode(p2), "{\"x\":1.0,\"y\":2.0,\"z\":3.0,\"spatialReference\":{\"wkid\":4326}}");
 
         Point p3 = new Point(1d, 2d, 3d, 4d);
-        assertEquals(e.encode(p3), "{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":2.0,\"z\":3.0,\"hasZ\":true,\"m\":4.0,\"hasM\":true}");
+        assertEquals(e.encode(p3), "{\"x\":1.0,\"y\":2.0,\"z\":3.0,\"m\":4.0,\"spatialReference\":{\"wkid\":4326}}");
     }
 
     @Test
@@ -138,13 +138,13 @@ public class EsriJsonTest {
                                        new Point(1d,1d),
                                        new Point(2d,2d));
 
-        assertEquals(e.encode(m1), "{\"hasZ\":false,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"points\":[[0.0,0.0],[1.0,1.0],[2.0,2.0]]}");
+        assertEquals(e.encode(m1), "{\"spatialReference\":{\"wkid\":4326},\"points\":[[0.0,0.0],[1.0,1.0],[2.0,2.0]]}");
 
         MultiPoint m2 = new MultiPoint(new Point(0d,0d,0d),
                                        new Point(1d,1d,1d),
                                        new Point(2d,2d,2d));
 
-        assertEquals(e.encode(m2), "{\"hasZ\":true,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"points\":[[0.0,0.0,0.0],[1.0,1.0,1.0],[2.0,2.0,2.0]]}");
+        assertEquals(e.encode(m2), "{\"hasZ\":true,\"spatialReference\":{\"wkid\":4326},\"points\":[[0.0,0.0,0.0],[1.0,1.0,1.0],[2.0,2.0,2.0]]}");
 
         MultiPoint m3 = new MultiPoint(new Point(0d,0d,0d,0d),
                                        new Point(1d,1d,1d,1d),
@@ -159,13 +159,13 @@ public class EsriJsonTest {
                                        new Point(1d,1d),
                                        new Point(2d,2d));
 
-        assertEquals(e.encode(l1), "{\"hasZ\":false,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0],[1.0,1.0],[2.0,2.0]]]}");
+        assertEquals(e.encode(l1), "{\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0],[1.0,1.0],[2.0,2.0]]]}");
 
         LineString l2 = new LineString(new Point(0d,0d,0d),
                                        new Point(1d,1d,1d),
                                        new Point(2d,2d,2d));
 
-        assertEquals(e.encode(l2), "{\"hasZ\":true,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0,0.0],[1.0,1.0,1.0],[2.0,2.0,2.0]]]}");
+        assertEquals(e.encode(l2), "{\"hasZ\":true,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0,0.0],[1.0,1.0,1.0],[2.0,2.0,2.0]]]}");
 
         LineString l3 = new LineString(new Point(0d,0d,0d,0d),
                                        new Point(1d,1d,1d,1d),
@@ -188,7 +188,7 @@ public class EsriJsonTest {
                         new Point(30d,30d)
                 ));
 
-        assertEquals(e.encode(m1), "{\"hasZ\":false,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0],[1.0,1.0],[2.0,2.0]],[[10.0,10.0],[20.0,20.0],[30.0,30.0]]]}");
+        assertEquals(e.encode(m1), "{\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0],[1.0,1.0],[2.0,2.0]],[[10.0,10.0],[20.0,20.0],[30.0,30.0]]]}");
 
         MultiLineString m2 = new MultiLineString(
                 new LineString(
@@ -202,7 +202,7 @@ public class EsriJsonTest {
                         new Point(30d,30d,30d)
                 ));
 
-        assertEquals(e.encode(m2), "{\"hasZ\":true,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0,0.0],[1.0,1.0,1.0],[2.0,2.0,2.0]],[[10.0,10.0,10.0],[20.0,20.0,20.0],[30.0,30.0,30.0]]]}");
+        assertEquals(e.encode(m2), "{\"hasZ\":true,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0,0.0],[1.0,1.0,1.0],[2.0,2.0,2.0]],[[10.0,10.0,10.0],[20.0,20.0,20.0],[30.0,30.0,30.0]]]}");
 
         MultiLineString m3 = new MultiLineString(
                 new LineString(
@@ -230,7 +230,7 @@ public class EsriJsonTest {
                 )
         );
 
-        assertEquals(e.encode(p1), "{\"hasZ\":false,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[2.0,2.0],[1.0,1.0],[0.0,0.0]]]}");
+        assertEquals(e.encode(p1), "{\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[2.0,2.0],[1.0,1.0],[0.0,0.0]]]}");
 
         // outer ring and hole directions are reversed to ensure ring orientations are correctly enforced
         Polygon p2 = new Polygon(
@@ -250,7 +250,7 @@ public class EsriJsonTest {
                         new Point(1d,1d,0d)
                 ));
 
-        assertEquals(e.encode(p2), "{\"hasZ\":true,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0,0.0],[10.0,0.0,0.0],[10.0,10.0,0.0],[0.0,10.0,0.0],[0.0,0.0,0.0]],[[1.0,1.0,0.0],[9.0,1.0,0.0],[9.0,9.0,0.0],[1.0,9.0,0.0],[1.0,1.0,0.0]]]}");
+        assertEquals(e.encode(p2), "{\"hasZ\":true,\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0,0.0],[10.0,0.0,0.0],[10.0,10.0,0.0],[0.0,10.0,0.0],[0.0,0.0,0.0]],[[1.0,1.0,0.0],[9.0,1.0,0.0],[9.0,9.0,0.0],[1.0,9.0,0.0],[1.0,1.0,0.0]]]}");
     }
 
     @Test
@@ -260,31 +260,31 @@ public class EsriJsonTest {
                 new Polygon(new LineString(new Point(0d,0d), new Point(5d,5d), new Point(9d,9d), new Point(0d,0d)))
         );
 
-        assertEquals(e.encode(m1), "{\"hasZ\":false,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[2.0,2.0],[1.0,1.0],[0.0,0.0]],[[0.0,0.0],[9.0,9.0],[5.0,5.0],[0.0,0.0]]]}");
+        assertEquals(e.encode(m1), "{\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[2.0,2.0],[1.0,1.0],[0.0,0.0]],[[0.0,0.0],[9.0,9.0],[5.0,5.0],[0.0,0.0]]]}");
     }
 
     @Test
     public void testEncodeGeometryCollection() throws Exception {
         GeometryCollection g1 = new GeometryCollection(new Point(0d,0d), new LineString(new Point(0d,0d), new Point(1d,1d)));
 
-        assertEquals(e.encode(g1), "[{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},{\"hasZ\":false,\"hasM\":false,\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0],[1.0,1.0]]]}]");
+        assertEquals(e.encode(g1), "[{\"x\":0.0,\"y\":0.0,\"spatialReference\":{\"wkid\":4326}},{\"spatialReference\":{\"wkid\":4326},\"paths\":[[[0.0,0.0],[1.0,1.0]]]}]");
     }
 
     @Test
     public void testEncodeFeature() throws Exception {
         Feature f = new Feature(new Point(0d,0d));
-        assertEquals(e.encode(f), "{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{}}");
+        assertEquals(e.encode(f), "{\"geometry\":{\"x\":0.0,\"y\":0.0,\"spatialReference\":{\"wkid\":4326}},\"attributes\":{}}");
 
         JsonObject p = new JsonObject();
         p.add("foo", new JsonPrimitive("bar"));
         f.setProperties(p);
 
-        assertEquals(e.encode(f), "{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{\"foo\":\"bar\"}}");
+        assertEquals(e.encode(f), "{\"geometry\":{\"x\":0.0,\"y\":0.0,\"spatialReference\":{\"wkid\":4326}},\"attributes\":{\"foo\":\"bar\"}}");
     }
 
     @Test
     public void testEncodeFeatureCollection() throws Exception {
         FeatureCollection f = new FeatureCollection(new Feature(new Point(0d,0d)), new Feature(new Point(1d,1d)));
-        assertEquals(e.encode(f), "[{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{}},{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":1.0},\"attributes\":{}}]");
+        assertEquals(e.encode(f), "[{\"geometry\":{\"x\":0.0,\"y\":0.0,\"spatialReference\":{\"wkid\":4326}},\"attributes\":{}},{\"geometry\":{\"x\":1.0,\"y\":1.0,\"spatialReference\":{\"wkid\":4326}},\"attributes\":{}}]");
     }
 }
