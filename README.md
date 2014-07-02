@@ -30,7 +30,7 @@ Terraformer t = new Terraformer();
 
 // Set the decoder and encoder
 t.setDecoder(new EsriJson());
-t.setEnocder(new GeoJson());
+t.setEncoder(new GeoJson());
 
 String esriJson = "{\"x\":100.0,\"y\":100.0}";
 
