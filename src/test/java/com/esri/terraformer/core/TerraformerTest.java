@@ -106,7 +106,7 @@ public class TerraformerTest {
     public void testConvert() throws Exception {
         Terraformer t = new Terraformer(new GeoJson(), new GeoJson());
 
-        String in = "{\"type\":\"Point\",\"coordinates\":[10.0,10.0]}";
+        String in = "{\"type\":\"Point\",\"coordinates\":[10.0,10.0],\"spatialReference\":{\"wkid\":4326}}";
         String out = t.convert(in);
 
         assertEquals(in, out);
