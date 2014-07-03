@@ -463,7 +463,7 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
             try {
                 coord = elem.getAsDouble();
             } catch (RuntimeException e) {
-                throw new TerraformerException(errorPrefix, TerraformerException.COORDINATE_NOT_NUMERIC + elem);
+                throw new TerraformerException(errorPrefix, TerraformerException.COORDINATE_NOT_NUMERIC + elem, e);
             }
 
             returnVal.add(coord);

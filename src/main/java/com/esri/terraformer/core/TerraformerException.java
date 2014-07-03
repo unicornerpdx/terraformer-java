@@ -22,4 +22,8 @@ public class TerraformerException extends Exception {
     public TerraformerException(String prefix, String error) {
         super(prefix + error);
     }
+
+    public TerraformerException(String prefix, String error, Throwable throwable) {
+        super(prefix + error, throwable);
+    }
 }

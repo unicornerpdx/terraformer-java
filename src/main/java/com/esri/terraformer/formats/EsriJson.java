@@ -298,7 +298,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
                 coords.add(g.get(KEY_M).getAsDouble());
             }
         } catch (RuntimeException e) {
-            throw new TerraformerException(DECODE_ERROR_PREFIX, "Unable to decode point.");
+            throw new TerraformerException(DECODE_ERROR_PREFIX, "Unable to decode point.", e);
         }
 
         return new Point(coords);
@@ -389,7 +389,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         try {
             geometry = (Geometry) geometryFromJson(g.get(KEY_GEOMETRY).getAsJsonObject());
         } catch (TerraformerException e) {
-            throw new TerraformerException("Error decoding EsriJSON feature", "Unable to parse 'geometry'.");
+            throw new TerraformerException("Error decoding EsriJSON feature", "Unable to parse 'geometry'.", e);
         }
 
         JsonObject attributes = g.get(KEY_ATTRIBUTES).getAsJsonObject();
