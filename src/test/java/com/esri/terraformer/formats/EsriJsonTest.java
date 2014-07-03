@@ -225,13 +225,13 @@ public class EsriJsonTest {
         Polygon p1 = new Polygon(
                 new LineString(
                         new Point(0d,0d),
-                        new Point(1d,1d),
-                        new Point(2d,2d),
+                        new Point(1d,2d),
+                        new Point(2d,0d),
                         new Point(0d,0d)
                 )
         );
 
-        assertEquals(e.encode(p1), "{\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[2.0,2.0],[1.0,1.0],[0.0,0.0]]]}");
+        assertEquals(e.encode(p1), "{\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[1.0,2.0],[2.0,0.0],[0.0,0.0]]]}");
 
         // outer ring and hole directions are reversed to ensure ring orientations are correctly enforced
         Polygon p2 = new Polygon(
@@ -251,17 +251,17 @@ public class EsriJsonTest {
                         new Point(1d,1d,0d)
                 ));
 
-        assertEquals(e.encode(p2), "{\"hasZ\":true,\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0,0.0],[10.0,0.0,0.0],[10.0,10.0,0.0],[0.0,10.0,0.0],[0.0,0.0,0.0]],[[1.0,1.0,0.0],[9.0,1.0,0.0],[9.0,9.0,0.0],[1.0,9.0,0.0],[1.0,1.0,0.0]]]}");
+        assertEquals(e.encode(p2), "{\"hasZ\":true,\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0,0.0],[0.0,10.0,0.0],[10.0,10.0,0.0],[10.0,0.0,0.0],[0.0,0.0,0.0]],[[1.0,1.0,0.0],[9.0,1.0,0.0],[9.0,9.0,0.0],[1.0,9.0,0.0],[1.0,1.0,0.0]]]}");
     }
 
     @Test
     public void testEncodeMultiPolygon() throws Exception {
         MultiPolygon m1 = new MultiPolygon(
-                new Polygon(new LineString(new Point(0d,0d), new Point(1d,1d), new Point(2d,2d), new Point(0d,0d))),
-                new Polygon(new LineString(new Point(0d,0d), new Point(5d,5d), new Point(9d,9d), new Point(0d,0d)))
+                new Polygon(new LineString(new Point(0d,0d), new Point(1d,2d), new Point(2d,0d), new Point(0d,0d))),
+                new Polygon(new LineString(new Point(0d,0d), new Point(5d,2d), new Point(2d,0d), new Point(0d,0d)))
         );
 
-        assertEquals(e.encode(m1), "{\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[2.0,2.0],[1.0,1.0],[0.0,0.0]],[[0.0,0.0],[9.0,9.0],[5.0,5.0],[0.0,0.0]]]}");
+        assertEquals(e.encode(m1), "{\"spatialReference\":{\"wkid\":4326},\"rings\":[[[0.0,0.0],[1.0,2.0],[2.0,0.0],[0.0,0.0]],[[0.0,0.0],[5.0,2.0],[2.0,0.0],[0.0,0.0]]]}");
     }
 
     @Test
