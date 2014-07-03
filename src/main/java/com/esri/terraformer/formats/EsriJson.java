@@ -438,9 +438,11 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             }
 
             // orient rings
-            if (i == 0 && !ringIsClockwise(r)) {
+            if (i == 0) {
                 // make outer ring clockwise
-                r.reverse();
+                if (!ringIsClockwise(r)) {
+                    r.reverse();
+                }
             } else if (ringIsClockwise(r)) {
                 // make holes counter clockwise
                 r.reverse();
