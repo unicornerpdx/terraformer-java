@@ -541,41 +541,138 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return (!intersects && contains);
     }
 
-    private static boolean lineStringsIntersect(LineString a, LineString b) {
-        for (int i = 0; i < a.size() - 1; i++) {
-            for (int j = 0; j < b.size() - 1; j++) {
-                if (lineLineIntersect(a.get(i), a.get(i + 1), b.get(j), b.get(j + 1))) {
+    /**
+     * Determines whether two lineStrings intersect
+     * @param lineString a LineString
+     * @param other another LineString
+     * @return true if the given LineStrings intersect, false otherwise.
+     */
+    static boolean lineStringsIntersect(LineString lineString, LineString other) {
+        // See: http://geomalgorithms.com/a05-_intersect-1.html for detailed explanation of this algorithm.
+        for (int i = 0; i < lineString.size() - 1; i++) {
+            Point a1 = lineString.get(i);
+            Point a2 = lineString.get(i+1);
+            LineString a = new LineString(a1, a2);
+
+            double[] aVector = new double[] { a2.getX() - a1.getX(), a2.getY() - a1.getY() };
+            boolean aIsPoint = (aVector[0] == 0 && aVector[1] == 0);
+
+            for (int j = 0; j < other.size() - 1; j++) {
+                Point b1 = other.get(j);
+                Point b2 = other.get(j+1);
+                LineString b = new LineString(b1, b2);
+
+                double[] bVector = new double[] { b2.getX() - b1.getX(), b2.getY() - b1.getY() };
+                boolean bIsPoint = bVector[0] == 0 && bVector[1] == 0;
+
+                double[] abVector = new double[] { a1.getX() - b1.getX(), a1.getY() - b1.getY() };
+
+                // Determine if a and b are parallel. They are parallel if they are both perpendicular to the same vector,
+                // which can be boiled down to checking if the difference of the perp products of the two vectors is equal
+                // to 0.
+                boolean parallel = (Math.abs(aVector[0] * bVector[1] - aVector[1] * bVector[0]) <= 0.0000001);
+                if (parallel) {
+                    if (aVector[0] * abVector[1] - aVector[1] * abVector[0] != 0 || bVector[0] * abVector[1] - bVector[1] * abVector[0] != 0) {
+                        // parallel but not collinear, intersection not possible.
+                        continue;
+                    }
+
+                    // if both segments are points, they can only intersect if they are equivalent
+                    if (aIsPoint && bIsPoint) {
+                        if (a1.isEquivalentTo(b1)) {
+                            return true;
+                        }
+                        continue;
+                    }
+
+                    // If only one segment is a point check whether it lies on the other line segment. Note that at this
+                    // point we know they are collinear, so we only need to check a single dimension.
+                    if (aIsPoint) {
+                        if (b1.getX() != b2.getX()) {
+                            // not vertical, use x
+                            if (a1.getX() >= b1.getX() && a1.getX() <= b2.getX()) {
+                                return true;
+                            }
+                            if (a1.getX() <= b1.getX() && a1.getX() >= b2.getX()) {
+                                return true;
+                            }
+                        } else {
+                            // vertical, use y
+                            if (a1.getY() >= b1.getY() && a1.getY() <= b2.getY()) {
+                                return true;
+                            }
+                            if (a1.getY() <= b1.getY() && a1.getY() >= b2.getY()) {
+                                return true;
+                            }
+                        }
+
+                        // No intersection here
+                        continue;
+                    }
+                    if (bIsPoint) {
+                        if (a1.getX() != a2.getX()) {
+                            // not vertical, use x
+                            if (b1.getX() >= a1.getX() && b1.getX() <= a2.getX()) {
+                                return true;
+                            }
+                            if (b1.getX() <= a1.getX() && b1.getX() >= a2.getX()) {
+                                return true;
+                            }
+                        } else {
+                            // vertical, use y
+                            if (b1.getY() >= a1.getY() && b1.getY() <= a2.getY()) {
+                                return true;
+                            }
+                            if (b1.getY() <= a1.getY() && b1.getY() >= a2.getY()) {
+                                return true;
+                            }
+                        }
+
+                        // No intersection here
+                        continue;
+                    }
+
+                    // Segments are parallel and collinear and both have a length > 0, do they intersect?
+                    if (a1.getX() != a2.getX()) {
+                        // not vertical, use x
+                        if ((a1.getX() >= b1.getX() && a1.getX() <= b2.getX()) || a1.getX() <= b1.getX() && a1.getX() >= b2.getX()) {
+                            return true;
+                        }
+                        if ((a2.getX() >= b1.getX() && a2.getX() <= b2.getX()) || a2.getX() <= b1.getX() && a2.getX() >= b2.getX()) {
+                            return true;
+                        }
+                    } else {
+                        // vertical, use y
+                        if ((a1.getY() >= b1.getY() && a1.getY() <= b2.getY()) || a1.getY() <= b1.getY() && a1.getX() >= b2.getY()) {
+                            return true;
+                        }
+                        if ((a2.getY() >= b1.getY() && a2.getY() <= b2.getY()) || a1.getY() <= b1.getY() && a1.getY() >= b2.getY()) {
+                            return true;
+                        }
+                    }
+
+                    // These two segments are parallel and collinear but not intersecting... next!
+                    continue;
+                }
+
+                // At this point we have 2 non-parallel lines. Get the direction vector for the difference between their
+                // first points, which is used to calculate the distance from those points along their corresponding line
+                // at which the intersection occurs. This distance is presented as a ratio of the line segment's length,
+                // so if that distance is between 0 and 1, the intersection happens on that line segment. Therefore both
+                // the a and the b intersection distance ratio must be between 0 and 1 for this to be a valid intersection.
+
+                // See the Non-Parallel Lines section in the link above for a detailed explanation.
+                double aIntersectionDistance = (bVector[1] * abVector[0] - bVector[0] * abVector[1]) /
+                        (bVector[0] * aVector[1] - bVector[1] * aVector[0]);
+                double bIntersectionDistance = (aVector[0] * abVector[1] - aVector[1] * abVector[0]) /
+                        (aVector[0] * bVector[1] - aVector[1] * bVector[0]);
+
+                if (aIntersectionDistance >= 0 && aIntersectionDistance <= 1 &&
+                        bIntersectionDistance >= 0 && bIntersectionDistance <= 1) {
                     return true;
                 }
             }
         }
-        return false;
-    }
-
-    private static boolean lineLineIntersect(Point a1, Point a2, Point b1, Point b2) {
-        double a1_x = a1.get(0);
-        double a1_y = a1.get(1);
-        double a2_x = a2.get(0);
-        double a2_y = a2.get(1);
-        double b1_x = b1.get(0);
-        double b1_y = b1.get(1);
-        double b2_x = b2.get(0);
-        double b2_y = b2.get(1);
-
-        // compute determinants
-        double ua_t = (b2_x - b1_x) * (a1_y - b1_y) - (b2_y - b1_y) * (a1_x - b1_x);
-        double ub_t = (a2_x - a1_x) * (a1_y - b1_y) - (a2_y - a1_y) * (a1_x - b1_x);
-        double u_b  = (b2_y - b1_y) * (a2_x - a1_x) - (b2_x - b1_x) * (a2_y - a1_y);
-
-        // if segments are not parallel
-        if (u_b != 0) {
-            double ua = ua_t / u_b;
-            double ub = ub_t / u_b;
-
-            // check for segment intersection only, not infinite line intersection
-            return (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1);
-        }
-
         return false;
     }
 
