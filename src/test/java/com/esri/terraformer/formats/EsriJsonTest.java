@@ -16,6 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class EsriJsonTest {
@@ -286,5 +287,76 @@ public class EsriJsonTest {
     public void testEncodeFeatureCollection() throws Exception {
         FeatureCollection f = new FeatureCollection(new Feature(new Point(0d,0d)), new Feature(new Point(1d,1d)));
         assertEquals(e.encode(f), "[{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":0.0,\"y\":0.0},\"attributes\":{}},{\"geometry\":{\"spatialReference\":{\"wkid\":4326},\"x\":1.0,\"y\":1.0},\"attributes\":{}}]");
+    }
+
+    @Test
+    public void testRingContainsPoint() throws Exception {
+        LineString ring = new LineString(
+                new Point(-10d, -10d),
+                new Point(-10d, 10d),
+                new Point(10d, 10d),
+                new Point(10d, -10d),
+                new Point(-10d, -10d));
+        Point center = new Point(0d, 0d);
+        Point outside = new Point(100d, 100d);
+
+        assertTrue(EsriJson.ringContainsPoint(ring, center));
+        assertFalse(EsriJson.ringContainsPoint(ring, outside));
+    }
+
+    @Test
+    public void testLineStringsIntersect() throws Exception {
+        LineString horizontal = new LineString(
+                new Point(-1d, 0d), new Point(1d, 0d)
+        );
+        LineString parallel = new LineString(
+                new Point(-1d, 1d), new Point(1d, 1d)
+        );
+        LineString overlapping = new LineString(
+                new Point(-2d, 0d), new Point(0d, 0d)
+        );
+        LineString overlapping2 = new LineString(
+                new Point(0d, 0d), new Point(-2d, 0d)
+        );
+        LineString vertical = new LineString(
+                new Point(0d, 1d), new Point(0d, -1d)
+        );
+        LineString parallelVert = new LineString(
+                new Point(-1d, 1d), new Point(-1d, 1d)
+        );
+        LineString overlappingVert = new LineString(
+                new Point(0d, 2d), new Point(0d, 0d)
+        );
+        LineString overlappingVert2 = new LineString(
+                new Point(0d, 0d), new Point(0d, 2d)
+        );
+        LineString ls = new LineString(
+                new Point(-10d, 2d), new Point(10d, 2d)
+        );
+        LineString pointOnLS = new LineString(
+                new Point(-8d, 2d), new Point(-8d, 2d)
+        );
+        LineString pointOffLS = new LineString(
+                new Point(-8d, 20d), new Point(-8d, 20d)
+        );
+
+        assertTrue(EsriJson.lineStringsIntersect(horizontal, vertical));
+        assertTrue(EsriJson.lineStringsIntersect(horizontal, overlapping));
+        assertTrue(EsriJson.lineStringsIntersect(horizontal, overlapping2));
+        assertFalse(EsriJson.lineStringsIntersect(horizontal, parallel));
+        assertFalse(EsriJson.lineStringsIntersect(horizontal, ls));
+
+        assertTrue(EsriJson.lineStringsIntersect(vertical, horizontal));
+        assertTrue(EsriJson.lineStringsIntersect(vertical, overlappingVert));
+        assertTrue(EsriJson.lineStringsIntersect(horizontal, overlappingVert2));
+        assertFalse(EsriJson.lineStringsIntersect(horizontal, parallelVert));
+        assertFalse(EsriJson.lineStringsIntersect(vertical, ls));
+
+        assertFalse(EsriJson.lineStringsIntersect(ls, horizontal));
+        assertFalse(EsriJson.lineStringsIntersect(ls, vertical));
+        assertTrue(EsriJson.lineStringsIntersect(ls, pointOnLS));
+        assertTrue(EsriJson.lineStringsIntersect(pointOnLS, ls));
+        assertFalse(EsriJson.lineStringsIntersect(ls, pointOffLS));
+        assertFalse(EsriJson.lineStringsIntersect(pointOffLS, ls));
     }
 }
