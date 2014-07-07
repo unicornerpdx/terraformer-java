@@ -61,6 +61,31 @@ public class FormatUtils {
     /**
      * Package private.
      *
+     * @param json
+     * @return
+     * @throws TerraformerException
+     */
+    public static JsonArray getArray(String json, String errorPrefix) throws TerraformerException {
+        if (isEmpty(json)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        Gson gson = new Gson();
+        JsonArray object;
+
+        try {
+            JsonElement objElem = gson.fromJson(json, JsonElement.class);
+            object = objElem.getAsJsonArray();
+        } catch (RuntimeException e) {
+            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_ARRAY, e);
+        }
+
+        return object;
+    }
+
+    /**
+     * Package private.
+     *
      * @param objectElem
      * @param errorPrefix
      * @return

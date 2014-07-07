@@ -97,7 +97,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     }
 
     /** Create a Geometry from Json */
-    private static BaseGeometry geometryFromJson(JsonObject g) throws TerraformerException {
+    private BaseGeometry geometryFromJson(JsonObject g) throws TerraformerException {
         // infer type from keys present in g, then defer to the appropriate method.
         if (isPoint(g)) {
             return pointFromJson(g);
@@ -258,11 +258,14 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         JsonObject o = new JsonObject();
 
         o.add(KEY_GEOMETRY, geometryToJson(f.getGeometry()));
-        o.add(KEY_ATTRIBUTES, f.getProperties());
+        JsonObject properties = f.getProperties();
 
         if (f.getId() != null) {
-            o.addProperty(DEFAULT_FEATURE_ID_KEY, f.getId());
+            properties.addProperty(featureIdKey, f.getId());
         }
+
+        o.add(KEY_ATTRIBUTES, properties);
+
 
         return o;
     }
@@ -384,7 +387,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         }
     }
 
-    private static Feature featureFromJson(JsonObject g) throws TerraformerException {
+    private Feature featureFromJson(JsonObject g) throws TerraformerException {
         Geometry geometry;
         try {
             geometry = (Geometry) geometryFromJson(g.get(KEY_GEOMETRY).getAsJsonObject());
@@ -393,9 +396,12 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         }
 
         JsonObject attributes = g.get(KEY_ATTRIBUTES).getAsJsonObject();
+
+        // If the ID key is set in the attributes, pull it out and remove it from the attributes
         String id = null;
-        if (g.has(DEFAULT_FEATURE_ID_KEY)) {
-            id = g.getAsJsonPrimitive(DEFAULT_FEATURE_ID_KEY).getAsString();
+        if (attributes.has(featureIdKey)) {
+            id = attributes.getAsJsonPrimitive(featureIdKey).getAsString();
+            attributes.remove(featureIdKey);
         }
 
         return new Feature(id, geometry, attributes);
