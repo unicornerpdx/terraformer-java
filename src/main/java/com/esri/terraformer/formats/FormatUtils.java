@@ -27,7 +27,7 @@ public class FormatUtils {
         try {
             elem = gson.fromJson(json, JsonElement.class);
         } catch (RuntimeException e) {
-            throw new TerraformerException(errorPrefix, TerraformerException.NOT_VALID_JSON);
+           throw new TerraformerException(errorPrefix, TerraformerException.NOT_VALID_JSON, e);
         }
 
         return elem;
@@ -52,7 +52,32 @@ public class FormatUtils {
             JsonElement objElem = gson.fromJson(json, JsonElement.class);
             object = objElem.getAsJsonObject();
         } catch (RuntimeException e) {
-            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_OBJECT);
+            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_OBJECT, e);
+        }
+
+        return object;
+    }
+
+    /**
+     * Package private.
+     *
+     * @param json
+     * @return
+     * @throws TerraformerException
+     */
+    public static JsonArray getArray(String json, String errorPrefix) throws TerraformerException {
+        if (isEmpty(json)) {
+            throw new IllegalArgumentException(TerraformerException.JSON_STRING_EMPTY);
+        }
+
+        Gson gson = new Gson();
+        JsonArray object;
+
+        try {
+            JsonElement objElem = gson.fromJson(json, JsonElement.class);
+            object = objElem.getAsJsonArray();
+        } catch (RuntimeException e) {
+            throw new TerraformerException(errorPrefix, TerraformerException.NOT_A_JSON_ARRAY, e);
         }
 
         return object;
@@ -71,7 +96,7 @@ public class FormatUtils {
         try {
             object = objectElem.getAsJsonObject();
         } catch (RuntimeException e) {
-            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_OBJECT);
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_OBJECT, e);
         }
 
         return object;
@@ -90,7 +115,7 @@ public class FormatUtils {
         try {
             array = arrayElem.getAsJsonArray();
         } catch (RuntimeException e) {
-            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_ARRAY);
+            throw new TerraformerException(errorPrefix, TerraformerException.ELEMENT_NOT_ARRAY, e);
         }
 
         return array;

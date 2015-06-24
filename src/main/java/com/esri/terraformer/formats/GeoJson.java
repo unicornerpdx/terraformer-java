@@ -27,6 +27,7 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
     public static final String GEOMETRY_KEY = "geometry";
     public static final String PROPERTIES_KEY = "properties";
     public static final String FEATURES_KEY = "features";
+    public static final String ID_KEY = "id";
 
     @Override
     public BaseGeometry decode(String json) throws TerraformerException {
@@ -181,6 +182,11 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
         // assume the type has already been checked
         JsonElement geomElement = object.get(GEOMETRY_KEY);
 
+        String id = null;
+        if (object.has(ID_KEY)) {
+            id = object.get(ID_KEY).getAsString();
+        }
+
         if (geomElement == null) {
             throw new TerraformerException(errorPrefix, TerraformerException.GEOMETRY_KEY_NOT_FOUND);
         }
@@ -206,6 +212,10 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
         Feature returnVal = new Feature();
         if (tempObj.entrySet().size() > 0) {
             returnVal.add(geometryFromObjectElement(geomElement, errorPrefix));
+        }
+
+        if (id != null) {
+            returnVal.setId(id);
         }
 
         if (propsObj != null) {
@@ -237,6 +247,10 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
 
         if (feature.getProperties() != null) {
             object.add(PROPERTIES_KEY, feature.getProperties());
+        }
+
+        if (feature.getId() != null) {
+            object.addProperty(ID_KEY, feature.getId());
         }
 
         return object;
@@ -463,7 +477,7 @@ public class GeoJson implements Terraformer.Encoder, Terraformer.Decoder {
             try {
                 coord = elem.getAsDouble();
             } catch (RuntimeException e) {
-                throw new TerraformerException(errorPrefix, TerraformerException.COORDINATE_NOT_NUMERIC + elem);
+                throw new TerraformerException(errorPrefix, TerraformerException.COORDINATE_NOT_NUMERIC + elem, e);
             }
 
             returnVal.add(coord);

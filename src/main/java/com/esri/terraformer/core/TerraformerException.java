@@ -4,6 +4,7 @@ public class TerraformerException extends Exception {
     public static final String JSON_STRING_EMPTY = "JSON String cannot be empty.";
     public static final String NOT_VALID_JSON = "not valid JSON";
     public static final String NOT_A_JSON_OBJECT = "not a JSON Object";
+    public static final String NOT_A_JSON_ARRAY = "not a JSON Array";
     public static final String NOT_OF_TYPE = "not of type ";
     public static final String COORDINATE_NOT_NUMERIC = "coordinate was not numeric: ";
     public static final String COORDINATES_KEY_NOT_FOUND = "\"coordinates\": key not found";
@@ -21,5 +22,9 @@ public class TerraformerException extends Exception {
 
     public TerraformerException(String prefix, String error) {
         super(prefix + error);
+    }
+
+    public TerraformerException(String prefix, String error, Throwable throwable) {
+        super(prefix + error, throwable);
     }
 }

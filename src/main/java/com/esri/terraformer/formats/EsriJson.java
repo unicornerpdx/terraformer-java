@@ -97,7 +97,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     }
 
     /** Create a Geometry from Json */
-    private static BaseGeometry geometryFromJson(JsonObject g) throws TerraformerException {
+    private BaseGeometry geometryFromJson(JsonObject g) throws TerraformerException {
         // infer type from keys present in g, then defer to the appropriate method.
         if (isPoint(g)) {
             return pointFromJson(g);
@@ -148,6 +148,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             default:
                 json = new JsonObject();
         }
+
         return json;
     }
 
@@ -157,17 +158,16 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     private JsonObject pointToJson(Point p) {
         JsonObject o = new JsonObject();
 
-        o.add(KEY_SPATIAL_REFERENCE, spatialReference);
         o.addProperty(KEY_X, p.getX());
         o.addProperty(KEY_Y, p.getY());
         if (p.size() > 2) {
             o.addProperty(KEY_Z, p.getZ());
-            o.addProperty(KEY_HAS_Z, true);
         }
         if (p.size() > 3) {
             o.addProperty(KEY_M, p.get(3));
-            o.addProperty(KEY_HAS_M, true);
         }
+
+        o.add(KEY_SPATIAL_REFERENCE, spatialReference);
 
         return o;
     }
@@ -258,11 +258,14 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         JsonObject o = new JsonObject();
 
         o.add(KEY_GEOMETRY, geometryToJson(f.getGeometry()));
-        o.add(KEY_ATTRIBUTES, f.getProperties());
+        JsonObject properties = f.getProperties();
 
         if (f.getId() != null) {
-            o.addProperty(DEFAULT_FEATURE_ID_KEY, f.getId());
+            properties.addProperty(featureIdKey, f.getId());
         }
+
+        o.add(KEY_ATTRIBUTES, properties);
+
 
         return o;
     }
@@ -287,21 +290,18 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             coords.add(g.get(KEY_X).getAsDouble());
             coords.add(g.get(KEY_Y).getAsDouble());
 
-            boolean hasZ = g.has(KEY_HAS_Z) && g.get(KEY_HAS_Z).getAsBoolean();
-            boolean hasM = g.has(KEY_HAS_M) && g.get(KEY_HAS_M).getAsBoolean();
-
-            if (hasZ) {
+            if (g.has(KEY_Z)) {
                 coords.add(g.get(KEY_Z).getAsDouble());
             }
 
-            if (hasM) {
-                if (!hasZ) {
+            if (g.has(KEY_M)) {
+                if (!g.has(KEY_Z)) {
                     coords.add(0.0); // z = null
                 }
                 coords.add(g.get(KEY_M).getAsDouble());
             }
         } catch (RuntimeException e) {
-            throw new TerraformerException(DECODE_ERROR_PREFIX, "Unable to decode point.");
+            throw new TerraformerException(DECODE_ERROR_PREFIX, "Unable to decode point.", e);
         }
 
         return new Point(coords);
@@ -387,18 +387,21 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         }
     }
 
-    private static Feature featureFromJson(JsonObject g) throws TerraformerException {
+    private Feature featureFromJson(JsonObject g) throws TerraformerException {
         Geometry geometry;
         try {
             geometry = (Geometry) geometryFromJson(g.get(KEY_GEOMETRY).getAsJsonObject());
         } catch (TerraformerException e) {
-            throw new TerraformerException("Error decoding EsriJSON feature", "Unable to parse 'geometry'.");
+            throw new TerraformerException("Error decoding EsriJSON feature", "Unable to parse 'geometry'.", e);
         }
 
         JsonObject attributes = g.get(KEY_ATTRIBUTES).getAsJsonObject();
+
+        // If the ID key is set in the attributes, pull it out and remove it from the attributes
         String id = null;
-        if (g.has(DEFAULT_FEATURE_ID_KEY)) {
-            id = g.getAsJsonPrimitive(DEFAULT_FEATURE_ID_KEY).getAsString();
+        if (attributes.has(featureIdKey)) {
+            id = attributes.getAsJsonPrimitive(featureIdKey).getAsString();
+            attributes.remove(featureIdKey);
         }
 
         return new Feature(id, geometry, attributes);
@@ -409,9 +412,11 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
     private JsonObject makeJsonObject(Integer numCoords) {
         JsonObject o = new JsonObject();
 
-        if (numCoords != null) {
-            o.addProperty(KEY_HAS_Z, numCoords > 2);
-            o.addProperty(KEY_HAS_M, numCoords > 3);
+        if (numCoords != null && numCoords > 2) {
+            o.addProperty(KEY_HAS_Z, true);
+        }
+        if (numCoords != null && numCoords > 3) {
+            o.addProperty(KEY_HAS_M, true);
         }
 
         o.add(KEY_SPATIAL_REFERENCE, spatialReference);
@@ -439,9 +444,11 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
             }
 
             // orient rings
-            if (i == 0 && !ringIsClockwise(r)) {
+            if (i == 0) {
                 // make outer ring clockwise
-                r.reverse();
+                if (!ringIsClockwise(r)) {
+                    r.reverse();
+                }
             } else if (ringIsClockwise(r)) {
                 // make holes counter clockwise
                 r.reverse();
@@ -535,7 +542,7 @@ public class EsriJson implements Terraformer.Decoder, Terraformer.Encoder {
         return contains;
     }
 
-    private static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
+    static boolean coordinatesContainCoordinates(LineString outer, LineString inner) {
         boolean intersects = lineStringsIntersect(outer, inner);
         boolean contains = ringContainsPoint(outer, inner.get(0));
 
