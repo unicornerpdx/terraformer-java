@@ -1,7 +1,8 @@
 apply plugin: 'java'
 
+group = 'com.esri'
 sourceCompatibility = 1.6
-version = '1.0'
+version = '1.0.0'
 
 repositories {
     mavenCentral()
@@ -10,4 +11,44 @@ repositories {
 dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.18"
+    }
+}
+
+allprojects {
+    apply plugin: "com.jfrog.artifactory"
+    apply plugin: "maven"
+}
+
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = 'ext-release-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }
+        defaults {
+            publishConfigs('archives')
+            publishIvy = false
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-release'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }
+    }
 }
